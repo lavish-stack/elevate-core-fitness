@@ -819,10 +819,10 @@ function Contact() {
           </p>
           <div className="mt-8 space-y-4">
             {[
-              { icon: MapPin, label: "1420 Ironworks Ave, Downtown District" },
-              { icon: Phone, label: "+1 (555) 123-4567" },
-              { icon: Mail, label: "hello@ironforge.club" },
-              { icon: Clock, label: "Members 24/7 · Reception 6am–11pm" },
+              { icon: MapPin, label: CONTACT.address },
+              { icon: Phone, label: CONTACT.phone },
+              { icon: Mail, label: CONTACT.email },
+              { icon: Clock, label: CONTACT.hours },
             ].map((c) => (
               <div key={c.label} className="flex items-center gap-4">
                 <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
