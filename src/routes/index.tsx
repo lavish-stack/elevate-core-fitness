@@ -756,11 +756,11 @@ function Testimonials() {
 
 function FAQ() {
   const items = [
-    { q: "Do you offer a free trial?", a: "Yes — every new member gets a free 7-day trial with full access to equipment, classes and a walkthrough with a coach." },
-    { q: "Are there long-term contracts?", a: "Never. All plans are month-to-month or pre-paid. Cancel anytime, no fees." },
-    { q: "What are your opening hours?", a: "Members enjoy 24/7 access, 365 days a year. Reception is staffed 6am–11pm daily." },
-    { q: "Is personal training included?", a: "Elite Annual and Signature plans include sessions. Any member can add PT à la carte." },
-    { q: "Do you have showers, lockers and parking?", a: "Yes — premium locker rooms with towel service, dry sauna, and free member parking." },
+    { q: "Do you offer a free trial?", a: `Yes — every new member gets a free ${BRAND.trialDays}-day trial with full access to the weight-lifting floor, strength zone and a walkthrough with a trainer.` },
+    { q: "Are there long-term contracts?", a: "No lock-in. All plans are monthly, quarterly or annual and paid upfront. No hidden charges." },
+    { q: "What are your timings?", a: CONTACT.hours + ". Timings may vary on public holidays." },
+    { q: "Is personal training included?", a: "Quarterly and Annual plans include sessions. Any member can add personal training separately." },
+    { q: "Is the gym beginner-friendly for women?", a: "Absolutely. Our trainers guide beginners through proper form step by step, and many of our members are women training with weights." },
   ];
   const [open, setOpen] = useState<number | null>(0);
   return (
