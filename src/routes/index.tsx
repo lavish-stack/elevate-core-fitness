@@ -834,8 +834,8 @@ function Contact() {
           </div>
           <div className="mt-8 rounded-2xl overflow-hidden border border-white/10 aspect-[16/9]">
             <iframe
-              title="IronForge Location"
-              src="https://www.openstreetmap.org/export/embed.html?bbox=-74.02%2C40.70%2C-73.96%2C40.74&layer=mapnik"
+              title={`${BRAND.fullName} Location`}
+              src={CONTACT.mapEmbedUrl}
               className="h-full w-full grayscale-[70%] contrast-125"
               loading="lazy"
             />
