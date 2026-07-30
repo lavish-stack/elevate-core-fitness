@@ -352,14 +352,14 @@ function About() {
 
 function Programs() {
   const items = [
-    { icon: Dumbbell, title: "Weight Training", desc: "Structured lifting programs for size, strength and shape." },
-    { icon: Flame, title: "Fat Loss", desc: "Metabolic conditioning built to torch fat and reveal definition." },
-    { icon: Trophy, title: "Strength", desc: "Powerlifting fundamentals: squat, bench, deadlift, mastered." },
-    { icon: Heart, title: "Cardio", desc: "Endurance sessions engineered for a heart that never quits." },
-    { icon: Activity, title: "Functional", desc: "Real-world movement patterns for pain-free everyday power." },
-    { icon: Zap, title: "CrossFit", desc: "High-intensity, community-driven WODs that break plateaus." },
-    { icon: Target, title: "Personal Training", desc: "1-on-1 coaching, custom plans and full accountability." },
-    { icon: Users, title: "Group Classes", desc: "Boxing, HIIT, spin, yoga and mobility — all week long." },
+    { icon: Dumbbell, title: "Weight Lifting", desc: "Our #1 specialty — barbell technique, progressive overload and serious lifting.", featured: true },
+    { icon: Trophy, title: "Strength Training", desc: "Our #1 specialty — squat, bench and deadlift programmed for real strength gains.", featured: true },
+    { icon: Zap, title: "Muscle Building", desc: "Hypertrophy programming built for clean, visible size and shape." },
+    { icon: Target, title: "Powerlifting", desc: "Competition-focused coaching on the big three lifts and meet prep." },
+    { icon: Flame, title: "Fat Loss", desc: "Strength-first fat loss that keeps your muscle while the weight drops." },
+    { icon: Activity, title: "Functional Fitness", desc: "Real-world movement patterns for pain-free everyday power." },
+    { icon: Heart, title: "Cardio & Conditioning", desc: "Endurance work that supports your lifting, not against it." },
+    { icon: Users, title: "Personal Training", desc: "1-on-1 coaching, custom plans and full accountability." },
   ];
   return (
     <section id="programs" className="relative py-24 md:py-32 bg-black/40">
