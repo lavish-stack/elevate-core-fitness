@@ -33,14 +33,7 @@ import { Reveal } from "@/components/gym/Reveal";
 import { Counter } from "@/components/gym/Counter";
 import heroImg from "@/assets/hero-gym.jpg";
 import interiorImg from "@/assets/gym-interior.jpg";
-import trainer1 from "@/assets/trainer-1.jpg";
-import trainer2 from "@/assets/trainer-2.jpg";
-import trainer3 from "@/assets/trainer-3.jpg";
-import trainer4 from "@/assets/trainer-4.jpg";
-import g1 from "@/assets/gallery-1.jpg";
-import g2 from "@/assets/gallery-2.jpg";
-import g3 from "@/assets/gallery-3.jpg";
-import g4 from "@/assets/gallery-4.jpg";
+import { BRAND, CONTACT, TRAINERS, GALLERY, PLANS, TESTIMONIALS } from "@/content/site";
 
 export const Route = createFileRoute("/")({
   head: () => ({
