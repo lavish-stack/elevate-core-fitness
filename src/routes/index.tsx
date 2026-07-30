@@ -635,7 +635,7 @@ function BMI() {
               {[
                 "Custom workout programs updated every 4 weeks",
                 "Personalized macro & meal guidance",
-                "Progress tracking via the IronForge app",
+                "Progress tracking with monthly strength benchmarks",
                 "Direct message access to your coach",
               ].map((t) => (
                 <li key={t} className="flex gap-3 items-start">
