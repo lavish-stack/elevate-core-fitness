@@ -320,15 +320,15 @@ function About() {
         </Reveal>
         <div>
           <Reveal>
-            <span className="text-xs uppercase tracking-[0.3em] text-primary">About IronForge</span>
+            <span className="text-xs uppercase tracking-[0.3em] text-primary">About {BRAND.fullName}</span>
             <h2 className="font-display mt-3 text-5xl md:text-6xl leading-[0.95]">
-              MORE THAN A GYM.<br />
-              <span className="text-gradient-red">A STANDARD.</span>
+              BUILT FOR LIFTERS.<br />
+              <span className="text-gradient-red">MADE FOR RESULTS.</span>
             </h2>
             <p className="mt-6 text-white/70 text-lg leading-relaxed">
-              Since 2010, IronForge has been the training ground for athletes, executives and everyday
-              warriors chasing greatness. We built a space where world-class equipment, elite coaching
-              and an uncompromising community come together — so you have zero excuses left.
+              {BRAND.fullName} is a high-end Indian fitness club built around weight lifting and
+              strength training. Heavy-duty racks, quality barbells and expert coaching led by Head
+              Trainer Harshvardhan Koli — so beginners and serious lifters both train the right way.
             </p>
           </Reveal>
           <div className="mt-8 grid sm:grid-cols-2 gap-4">
