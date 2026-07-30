@@ -698,23 +698,8 @@ function Gallery() {
 }
 
 function Testimonials() {
-  const items = [
-    {
-      name: "Jordan M.",
-      role: "Lost 22 kg in 6 months",
-      text: "IronForge changed my life. The coaches are elite and the community keeps you showing up on the days you don't feel like it.",
-    },
-    {
-      name: "Priya S.",
-      role: "First powerlifting meet",
-      text: "In 8 months I went from being scared of a barbell to competing. Best investment I've ever made in myself.",
-    },
-    {
-      name: "Diego R.",
-      role: "Executive member",
-      text: "Luxury facility, no ego culture, and coaches who actually respect your time. Nothing else in the city comes close.",
-    },
-  ];
+  const items = TESTIMONIALS;
+
   return (
     <section id="testimonials" className="relative py-24 md:py-32 bg-black/40">
       <div className="mx-auto max-w-7xl px-5">
