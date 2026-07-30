@@ -853,9 +853,9 @@ function Contact() {
             <h3 className="font-display text-3xl">Book Your Free Trial</h3>
             <p className="text-white/60 text-sm mt-1">No contracts. No pressure. Just results.</p>
             <div className="mt-6 grid sm:grid-cols-2 gap-4">
-              <Field label="Full name" placeholder="Alex Morgan" />
-              <Field label="Phone" placeholder="+1 555 0100" />
-              <Field label="Email" type="email" placeholder="alex@email.com" className="sm:col-span-2" />
+              <Field label="Full name" placeholder="Rahul Sharma" />
+              <Field label="Phone" placeholder="+91 98765 43210" />
+              <Field label="Email" type="email" placeholder="you@gmail.com" className="sm:col-span-2" />
               <div className="sm:col-span-2">
                 <label className="text-xs uppercase tracking-widest text-white/60">Goal</label>
                 <select className="mt-2 w-full rounded-xl bg-input/60 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-primary transition">
