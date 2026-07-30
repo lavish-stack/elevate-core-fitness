@@ -371,8 +371,8 @@ function Programs() {
               TRAIN WITH <span className="text-gradient-red">PURPOSE</span>.
             </h2>
             <p className="mt-5 text-white/70 text-lg">
-              Whatever your goal, we've built a program to get you there — coached by pros,
-              powered by data, and backed by a community that shows up.
+              We specialise in weight lifting and strength training — and back it up with
+              muscle building, powerlifting, fat loss and functional fitness programmes.
             </p>
           </div>
         </Reveal>
