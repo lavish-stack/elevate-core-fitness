@@ -876,7 +876,7 @@ function Contact() {
               </div>
             </div>
             <button type="submit" className="btn-primary mt-6 w-full">
-              Claim My Free 7-Day Trial <ChevronRight className="h-4 w-4" />
+              Claim My Free {BRAND.trialDays}-Day Trial <ChevronRight className="h-4 w-4" />
             </button>
             <p className="mt-3 text-xs text-white/40 text-center">
               We respect your privacy. No spam, ever.
