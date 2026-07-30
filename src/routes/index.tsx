@@ -293,10 +293,10 @@ function Marquee() {
 
 function About() {
   const features = [
-    { icon: Trophy, title: "Award-Winning Facility", desc: "Voted #1 luxury fitness club three years running." },
-    { icon: Zap, title: "24/7 Access", desc: "Train when you want, at your pace, on your schedule." },
+    { icon: Trophy, title: "Strength-First Facility", desc: "Racks, platforms and free weights built for serious lifting." },
+    { icon: Zap, title: "Flexible Timings", desc: "Early morning to late night — train on your schedule." },
     { icon: Target, title: "Results-Driven", desc: "Every program is engineered around measurable progress." },
-    { icon: Users, title: "Community That Lifts", desc: "Join thousands of members who show up for each other." },
+    { icon: Users, title: "Community That Lifts", desc: "Students, professionals and athletes training together." },
   ];
   return (
     <section id="about" className="relative py-24 md:py-32">
