@@ -496,7 +496,7 @@ function Membership() {
           ))}
         </div>
         <p className="mt-8 text-center text-sm text-white/50">
-          All memberships come with a 7-day money-back guarantee. Cancel anytime.
+          Start with a free {BRAND.trialDays}-day trial. No hidden charges, no lock-in period.
         </p>
       </div>
     </section>
