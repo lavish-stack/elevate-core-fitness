@@ -410,7 +410,7 @@ function Membership() {
               CHOOSE YOUR <span className="text-gradient-red">EDGE</span>.
             </h2>
             <p className="mt-5 text-white/70 text-lg">
-              Every plan includes 24/7 access and every group class. No contracts, no hidden fees.
+              Transparent pricing in Indian Rupees. Every plan includes full access to our weight-lifting and strength training floor.
             </p>
           </div>
         </Reveal>
