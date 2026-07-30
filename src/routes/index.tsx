@@ -140,7 +140,7 @@ function Nav({
             <Dumbbell className="h-5 w-5 text-white" />
           </div>
           <span className="font-display text-2xl tracking-widest">
-            IRON<span className="text-primary">FORGE</span>
+            {BRAND.namePart1} <span className="text-primary">{BRAND.namePart2}</span>
           </span>
         </a>
         <nav className="hidden lg:flex items-center gap-7 text-sm">
