@@ -212,24 +212,24 @@ function Hero() {
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-xs uppercase tracking-[0.25em] text-white/80 animate-float-up">
             <span className="h-2 w-2 rounded-full bg-primary animate-pulse-red" />
-            Open 24/7 · Now Enrolling
+            {BRAND.trialDays} Days Free Trial · Now Enrolling
           </div>
           <h1
             className="font-display mt-6 text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.85] tracking-tight animate-float-up"
             style={{ animationDelay: "80ms" }}
           >
-            FORGE THE
+            LIFT HEAVY.
             <br />
-            <span className="text-gradient-red">STRONGEST</span>
+            <span className="text-gradient-red">BUILD STRENGTH</span>.
             <br />
-            VERSION OF YOU
+            STAY UNSTOPPABLE.
           </h1>
           <p
             className="mt-7 max-w-xl text-lg text-white/70 animate-float-up"
             style={{ animationDelay: "180ms" }}
           >
-            Elite coaching. World-class equipment. A club built for people who refuse average.
-            Train where champions are made — and start seeing real results in 30 days.
+            {BRAND.fullName} is a premium weight lifting and strength training club led by Head
+            Trainer Harshvardhan Koli. Proper coaching, serious equipment and real, measurable results.
           </p>
           <div
             className="mt-8 flex flex-wrap gap-4 animate-float-up"
@@ -239,7 +239,7 @@ function Hero() {
               Join Now <ChevronRight className="h-4 w-4" />
             </a>
             <a href="#contact" className="btn-ghost">
-              <Play className="h-4 w-4" /> Free 7-Day Trial
+              <Play className="h-4 w-4" /> {BRAND.trialDays} Days Free Trial
             </a>
           </div>
         </div>
