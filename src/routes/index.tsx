@@ -657,12 +657,8 @@ function BMI() {
 }
 
 function Gallery() {
-  const imgs = [
-    { src: g1, alt: "Deadlift under red light", cls: "row-span-2" },
-    { src: g4, alt: "Group HIIT class" },
-    { src: g2, alt: "Boxing bag training" },
-    { src: g3, alt: "Kettlebell training", cls: "row-span-2" },
-  ];
+  const imgs = GALLERY;
+
   return (
     <section id="gallery" className="relative py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-5">
