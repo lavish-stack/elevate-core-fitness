@@ -398,49 +398,8 @@ function Programs() {
 }
 
 function Membership() {
-  const plans = [
-    {
-      name: "Monthly",
-      price: 49,
-      period: "/mo",
-      tag: "Flexible",
-      feats: ["24/7 gym access", "All group classes", "Locker & towel service", "Free WiFi & coffee bar"],
-    },
-    {
-      name: "Quarterly",
-      price: 129,
-      period: "/3 mo",
-      tag: "Popular",
-      feats: ["Everything in Monthly", "1 personal training session", "Body composition scan", "Nutrition guide"],
-    },
-    {
-      name: "Elite Annual",
-      price: 449,
-      period: "/yr",
-      tag: "Best Value",
-      recommended: true,
-      feats: [
-        "Everything in Quarterly",
-        "6 personal training sessions",
-        "Custom training program",
-        "Recovery lounge access",
-        "Guest passes (12/yr)",
-      ],
-    },
-    {
-      name: "Signature",
-      price: 199,
-      period: "/mo",
-      tag: "Premium",
-      feats: [
-        "Unlimited personal training",
-        "Dedicated head coach",
-        "Weekly nutrition coaching",
-        "Priority booking",
-        "InBody scan & monthly review",
-      ],
-    },
-  ];
+  const plans = PLANS;
+
   return (
     <section id="membership" className="relative py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-5">
