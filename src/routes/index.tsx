@@ -526,7 +526,11 @@ function Trainers() {
         <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {list.map((t, i) => (
             <Reveal key={t.name} delay={i * 80}>
-              <div className="group relative overflow-hidden rounded-3xl border border-white/10 aspect-[4/5]">
+              <div
+                className={`group relative overflow-hidden rounded-3xl border aspect-[4/5] ${
+                  "isHead" in t && t.isHead ? "border-primary/70 glow-red" : "border-white/10"
+                }`}
+              >
                 <img
                   src={t.img}
                   alt={`${t.name} — ${t.role}`}
@@ -536,8 +540,13 @@ function Trainers() {
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                {"isHead" in t && t.isHead && (
+                  <div className="absolute top-4 left-4 rounded-full bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-white shadow-lg">
+                    Head Trainer
+                  </div>
+                )}
                 <div className="absolute inset-x-0 bottom-0 p-5">
-                  <div className="text-[10px] uppercase tracking-[0.3em] text-primary">{t.exp} experience</div>
+                  <div className="text-[10px] uppercase tracking-[0.3em] text-primary">{t.exp}</div>
                   <h3 className="font-display text-2xl mt-1">{t.name}</h3>
                   <div className="text-sm text-white/70">{t.role}</div>
                   <div className="mt-3 flex flex-wrap gap-1.5">
