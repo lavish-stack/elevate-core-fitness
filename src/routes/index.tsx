@@ -527,7 +527,7 @@ function Trainers() {
             </p>
           </div>
         </Reveal>
-        <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {list.map((t, i) => (
             <Reveal key={t.name} delay={i * 80}>
               <div className="group relative overflow-hidden rounded-3xl border border-white/10 aspect-[4/5]">
