@@ -379,11 +379,20 @@ function Programs() {
         <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {items.map((p, i) => (
             <Reveal key={p.title} delay={(i % 4) * 80}>
-              <div className="card-premium group p-6 h-full">
+              <div
+                className={`card-premium group p-6 h-full ${
+                  "featured" in p && p.featured ? "!border-primary/60 bg-gradient-to-b from-red-950/40 to-transparent" : ""
+                }`}
+              >
                 <div className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-primary to-red-700 text-white shadow-lg group-hover:scale-110 transition-transform">
                   <p.icon className="h-6 w-6" />
                 </div>
-                <h3 className="mt-5 font-display text-2xl tracking-wide">{p.title}</h3>
+                {"featured" in p && p.featured && (
+                  <div className="mt-4 inline-block rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-primary">
+                    Our Specialty
+                  </div>
+                )}
+                <h3 className="mt-3 font-display text-2xl tracking-wide">{p.title}</h3>
                 <p className="mt-2 text-sm text-white/60 leading-relaxed">{p.desc}</p>
                 <div className="mt-5 inline-flex items-center text-xs uppercase tracking-[0.2em] text-primary/80 group-hover:text-primary transition">
                   Explore <ChevronRight className="ml-1 h-3.5 w-3.5" />
