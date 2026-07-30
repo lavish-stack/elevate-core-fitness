@@ -504,12 +504,8 @@ function Membership() {
 }
 
 function Trainers() {
-  const list = [
-    { img: trainer1, name: "Marcus Vale", role: "Head Strength Coach", tags: ["Powerlifting", "Hypertrophy"], exp: "12 yrs" },
-    { img: trainer2, name: "Elena Ross", role: "Performance Coach", tags: ["HIIT", "Fat Loss"], exp: "9 yrs" },
-    { img: trainer3, name: "Kai Bennett", role: "CrossFit Lead", tags: ["CrossFit", "Olympic Lifts"], exp: "10 yrs" },
-    { img: trainer4, name: "Sophia Chen", role: "Mobility & Recovery", tags: ["Yoga", "Rehab"], exp: "8 yrs" },
-  ];
+  const list = TRAINERS;
+
   return (
     <section id="trainers" className="relative py-24 md:py-32 bg-black/40">
       <div className="mx-auto max-w-7xl px-5">
