@@ -276,7 +276,7 @@ function Hero() {
 }
 
 function Marquee() {
-  const items = ["Strength", "Conditioning", "Hypertrophy", "CrossFit", "Boxing", "Recovery", "Nutrition", "Mobility"];
+  const items = ["Weight Lifting", "Strength Training", "Muscle Building", "Powerlifting", "Fat Loss", "Functional Fitness"];
   return (
     <div className="relative border-y border-white/5 bg-black/40 py-6 overflow-hidden">
       <div className="marquee-track flex gap-16 whitespace-nowrap font-display text-4xl md:text-5xl text-white/10">
