@@ -474,7 +474,7 @@ function Membership() {
                 <div className="text-xs uppercase tracking-[0.25em] text-white/50">{p.tag}</div>
                 <h3 className="mt-2 font-display text-3xl">{p.name}</h3>
                 <div className="mt-4 flex items-end gap-1">
-                  <span className="font-display text-5xl text-white">${p.price}</span>
+                  <span className="font-display text-5xl text-white">₹{p.price}</span>
                   <span className="text-white/50 mb-1.5">{p.period}</span>
                 </div>
                 <ul className="mt-6 space-y-3 text-sm text-white/75 flex-1">
