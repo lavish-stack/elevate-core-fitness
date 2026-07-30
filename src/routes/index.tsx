@@ -967,7 +967,7 @@ function Footer() {
         </div>
       </div>
       <div className="mt-14 border-t border-white/5 pt-6 mx-auto max-w-7xl px-5 flex flex-wrap items-center justify-between gap-3 text-xs text-white/40">
-        <div>© {new Date().getFullYear()} IronForge Fitness Club. All rights reserved.</div>
+        <div>© {new Date().getFullYear()} {BRAND.fullName}. All rights reserved.</div>
         <div className="flex gap-5">
           <a href="#" className="hover:text-primary">Privacy</a>
           <a href="#" className="hover:text-primary">Terms</a>
