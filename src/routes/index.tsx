@@ -98,7 +98,7 @@ function Home() {
 
       {/* Floating actions */}
       <a
-        href="https://wa.me/15551234567"
+        href={`https://wa.me/${CONTACT.whatsapp}`}
         target="_blank"
         rel="noreferrer"
         aria-label="WhatsApp"
