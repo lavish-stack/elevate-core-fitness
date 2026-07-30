@@ -247,10 +247,10 @@ function Hero() {
         {/* Stats */}
         <div className="mt-16 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { n: 12500, s: "+", label: "Active Members" },
-            { n: 48, s: "", label: "Elite Trainers" },
-            { n: 15, s: "yrs", label: "Years of Results" },
-            { n: 120, s: "+", label: "Weekly Classes" },
+            { n: 1200, s: "+", label: "Active Members" },
+            { n: 6, s: "", label: "Expert Trainers" },
+            { n: 6, s: "", label: "Training Programs" },
+            { n: 100, s: "%", label: "Strength Focused" },
           ].map((s, i) => (
             <Reveal key={s.label} delay={i * 80}>
               <div className="glass rounded-2xl p-5 md:p-6 hover:border-primary/60 transition">
