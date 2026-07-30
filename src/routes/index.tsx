@@ -522,8 +522,8 @@ function Trainers() {
               </h2>
             </div>
             <p className="text-white/60 max-w-md">
-              Certified, competitive, and obsessed with your progress. Every coach at IronForge
-              is hand-picked and continuously trained.
+              Led by Head Trainer Harshvardhan Koli — specialists in weight lifting, strength
+              training and powerlifting, focused entirely on your progress.
             </p>
           </div>
         </Reveal>
