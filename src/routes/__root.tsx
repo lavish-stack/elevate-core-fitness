@@ -77,16 +77,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "IRONFORGE — Premium 24/7 Fitness Club" },
+      { title: "New Fitness Zone — Premium Strength Training Gym" },
       {
         name: "description",
         content:
-          "IRONFORGE is a luxury 24/7 fitness club with elite trainers, world-class equipment and results-driven programs. Claim your free trial today.",
+          "New Fitness Zone is a premium Indian fitness club specialising in weight lifting and strength training, with expert trainers and results-driven programs. Get 2 days free trial.",
       },
-      { property: "og:title", content: "IRONFORGE — Premium 24/7 Fitness Club" },
+      { property: "og:title", content: "New Fitness Zone — Premium Strength Training Gym" },
       {
         property: "og:description",
-        content: "Elite training. Premium equipment. Real results. Join the strongest club in the city.",
+        content: "Weight lifting. Strength training. Real results. Join the strongest club in the city.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

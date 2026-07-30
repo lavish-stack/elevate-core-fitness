@@ -33,29 +33,24 @@ import { Reveal } from "@/components/gym/Reveal";
 import { Counter } from "@/components/gym/Counter";
 import heroImg from "@/assets/hero-gym.jpg";
 import interiorImg from "@/assets/gym-interior.jpg";
-import trainer1 from "@/assets/trainer-1.jpg";
-import trainer2 from "@/assets/trainer-2.jpg";
-import trainer3 from "@/assets/trainer-3.jpg";
-import trainer4 from "@/assets/trainer-4.jpg";
-import g1 from "@/assets/gallery-1.jpg";
-import g2 from "@/assets/gallery-2.jpg";
-import g3 from "@/assets/gallery-3.jpg";
-import g4 from "@/assets/gallery-4.jpg";
+import { BRAND, CONTACT, TRAINERS, GALLERY, PLANS, TESTIMONIALS } from "@/content/site";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "IRONFORGE — Premium 24/7 Fitness Club" },
+      { title: "New Fitness Zone — Weight Lifting & Strength Training Gym" },
       {
         name: "description",
         content:
-          "IRONFORGE is a luxury 24/7 fitness club with elite coaches, world-class equipment and results-driven programs. Claim your free 7-day trial.",
+          "New Fitness Zone is a premium Indian fitness club specialising in weight lifting, strength training, muscle building and powerlifting. Claim your 2 days free trial.",
       },
-      { property: "og:title", content: "IRONFORGE — Premium 24/7 Fitness Club" },
+      { property: "og:title", content: "New Fitness Zone — Weight Lifting & Strength Training Gym" },
       {
         property: "og:description",
-        content: "Elite training. Premium equipment. Real results.",
+        content: "Premium strength training club led by Head Trainer Harshvardhan Koli. 2 days free trial.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Home,
@@ -105,7 +100,7 @@ function Home() {
 
       {/* Floating actions */}
       <a
-        href="https://wa.me/15551234567"
+        href={`https://wa.me/${CONTACT.whatsapp}`}
         target="_blank"
         rel="noreferrer"
         aria-label="WhatsApp"
@@ -147,7 +142,7 @@ function Nav({
             <Dumbbell className="h-5 w-5 text-white" />
           </div>
           <span className="font-display text-2xl tracking-widest">
-            IRON<span className="text-primary">FORGE</span>
+            {BRAND.namePart1} <span className="text-primary">{BRAND.namePart2}</span>
           </span>
         </a>
         <nav className="hidden lg:flex items-center gap-7 text-sm">
@@ -219,24 +214,24 @@ function Hero() {
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-xs uppercase tracking-[0.25em] text-white/80 animate-float-up">
             <span className="h-2 w-2 rounded-full bg-primary animate-pulse-red" />
-            Open 24/7 · Now Enrolling
+            {BRAND.trialDays} Days Free Trial · Now Enrolling
           </div>
           <h1
             className="font-display mt-6 text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.85] tracking-tight animate-float-up"
             style={{ animationDelay: "80ms" }}
           >
-            FORGE THE
+            LIFT HEAVY.
             <br />
-            <span className="text-gradient-red">STRONGEST</span>
+            <span className="text-gradient-red">BUILD STRENGTH</span>.
             <br />
-            VERSION OF YOU
+            STAY UNSTOPPABLE.
           </h1>
           <p
             className="mt-7 max-w-xl text-lg text-white/70 animate-float-up"
             style={{ animationDelay: "180ms" }}
           >
-            Elite coaching. World-class equipment. A club built for people who refuse average.
-            Train where champions are made — and start seeing real results in 30 days.
+            {BRAND.fullName} is a premium weight lifting and strength training club led by Head
+            Trainer Harshvardhan Koli. Proper coaching, serious equipment and real, measurable results.
           </p>
           <div
             className="mt-8 flex flex-wrap gap-4 animate-float-up"
@@ -246,7 +241,7 @@ function Hero() {
               Join Now <ChevronRight className="h-4 w-4" />
             </a>
             <a href="#contact" className="btn-ghost">
-              <Play className="h-4 w-4" /> Free 7-Day Trial
+              <Play className="h-4 w-4" /> {BRAND.trialDays} Days Free Trial
             </a>
           </div>
         </div>
@@ -254,10 +249,10 @@ function Hero() {
         {/* Stats */}
         <div className="mt-16 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { n: 12500, s: "+", label: "Active Members" },
-            { n: 48, s: "", label: "Elite Trainers" },
-            { n: 15, s: "yrs", label: "Years of Results" },
-            { n: 120, s: "+", label: "Weekly Classes" },
+            { n: 1200, s: "+", label: "Active Members" },
+            { n: 6, s: "", label: "Expert Trainers" },
+            { n: 6, s: "", label: "Training Programs" },
+            { n: 100, s: "%", label: "Strength Focused" },
           ].map((s, i) => (
             <Reveal key={s.label} delay={i * 80}>
               <div className="glass rounded-2xl p-5 md:p-6 hover:border-primary/60 transition">
@@ -283,7 +278,7 @@ function Hero() {
 }
 
 function Marquee() {
-  const items = ["Strength", "Conditioning", "Hypertrophy", "CrossFit", "Boxing", "Recovery", "Nutrition", "Mobility"];
+  const items = ["Weight Lifting", "Strength Training", "Muscle Building", "Powerlifting", "Fat Loss", "Functional Fitness"];
   return (
     <div className="relative border-y border-white/5 bg-black/40 py-6 overflow-hidden">
       <div className="marquee-track flex gap-16 whitespace-nowrap font-display text-4xl md:text-5xl text-white/10">
@@ -300,10 +295,10 @@ function Marquee() {
 
 function About() {
   const features = [
-    { icon: Trophy, title: "Award-Winning Facility", desc: "Voted #1 luxury fitness club three years running." },
-    { icon: Zap, title: "24/7 Access", desc: "Train when you want, at your pace, on your schedule." },
+    { icon: Trophy, title: "Strength-First Facility", desc: "Racks, platforms and free weights built for serious lifting." },
+    { icon: Zap, title: "Flexible Timings", desc: "Early morning to late night — train on your schedule." },
     { icon: Target, title: "Results-Driven", desc: "Every program is engineered around measurable progress." },
-    { icon: Users, title: "Community That Lifts", desc: "Join thousands of members who show up for each other." },
+    { icon: Users, title: "Community That Lifts", desc: "Students, professionals and athletes training together." },
   ];
   return (
     <section id="about" className="relative py-24 md:py-32">
@@ -327,15 +322,15 @@ function About() {
         </Reveal>
         <div>
           <Reveal>
-            <span className="text-xs uppercase tracking-[0.3em] text-primary">About IronForge</span>
+            <span className="text-xs uppercase tracking-[0.3em] text-primary">About {BRAND.fullName}</span>
             <h2 className="font-display mt-3 text-5xl md:text-6xl leading-[0.95]">
-              MORE THAN A GYM.<br />
-              <span className="text-gradient-red">A STANDARD.</span>
+              BUILT FOR LIFTERS.<br />
+              <span className="text-gradient-red">MADE FOR RESULTS.</span>
             </h2>
             <p className="mt-6 text-white/70 text-lg leading-relaxed">
-              Since 2010, IronForge has been the training ground for athletes, executives and everyday
-              warriors chasing greatness. We built a space where world-class equipment, elite coaching
-              and an uncompromising community come together — so you have zero excuses left.
+              {BRAND.fullName} is a high-end Indian fitness club built around weight lifting and
+              strength training. Heavy-duty racks, quality barbells and expert coaching led by Head
+              Trainer Harshvardhan Koli — so beginners and serious lifters both train the right way.
             </p>
           </Reveal>
           <div className="mt-8 grid sm:grid-cols-2 gap-4">
@@ -359,14 +354,14 @@ function About() {
 
 function Programs() {
   const items = [
-    { icon: Dumbbell, title: "Weight Training", desc: "Structured lifting programs for size, strength and shape." },
-    { icon: Flame, title: "Fat Loss", desc: "Metabolic conditioning built to torch fat and reveal definition." },
-    { icon: Trophy, title: "Strength", desc: "Powerlifting fundamentals: squat, bench, deadlift, mastered." },
-    { icon: Heart, title: "Cardio", desc: "Endurance sessions engineered for a heart that never quits." },
-    { icon: Activity, title: "Functional", desc: "Real-world movement patterns for pain-free everyday power." },
-    { icon: Zap, title: "CrossFit", desc: "High-intensity, community-driven WODs that break plateaus." },
-    { icon: Target, title: "Personal Training", desc: "1-on-1 coaching, custom plans and full accountability." },
-    { icon: Users, title: "Group Classes", desc: "Boxing, HIIT, spin, yoga and mobility — all week long." },
+    { icon: Dumbbell, title: "Weight Lifting", desc: "Our #1 specialty — barbell technique, progressive overload and serious lifting.", featured: true },
+    { icon: Trophy, title: "Strength Training", desc: "Our #1 specialty — squat, bench and deadlift programmed for real strength gains.", featured: true },
+    { icon: Zap, title: "Muscle Building", desc: "Hypertrophy programming built for clean, visible size and shape." },
+    { icon: Target, title: "Powerlifting", desc: "Competition-focused coaching on the big three lifts and meet prep." },
+    { icon: Flame, title: "Fat Loss", desc: "Strength-first fat loss that keeps your muscle while the weight drops." },
+    { icon: Activity, title: "Functional Fitness", desc: "Real-world movement patterns for pain-free everyday power." },
+    { icon: Heart, title: "Cardio & Conditioning", desc: "Endurance work that supports your lifting, not against it." },
+    { icon: Users, title: "Personal Training", desc: "1-on-1 coaching, custom plans and full accountability." },
   ];
   return (
     <section id="programs" className="relative py-24 md:py-32 bg-black/40">
@@ -378,19 +373,28 @@ function Programs() {
               TRAIN WITH <span className="text-gradient-red">PURPOSE</span>.
             </h2>
             <p className="mt-5 text-white/70 text-lg">
-              Whatever your goal, we've built a program to get you there — coached by pros,
-              powered by data, and backed by a community that shows up.
+              We specialise in weight lifting and strength training — and back it up with
+              muscle building, powerlifting, fat loss and functional fitness programmes.
             </p>
           </div>
         </Reveal>
         <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {items.map((p, i) => (
             <Reveal key={p.title} delay={(i % 4) * 80}>
-              <div className="card-premium group p-6 h-full">
+              <div
+                className={`card-premium group p-6 h-full ${
+                  "featured" in p && p.featured ? "!border-primary/60 bg-gradient-to-b from-red-950/40 to-transparent" : ""
+                }`}
+              >
                 <div className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-primary to-red-700 text-white shadow-lg group-hover:scale-110 transition-transform">
                   <p.icon className="h-6 w-6" />
                 </div>
-                <h3 className="mt-5 font-display text-2xl tracking-wide">{p.title}</h3>
+                {"featured" in p && p.featured && (
+                  <div className="mt-4 inline-block rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-primary">
+                    Our Specialty
+                  </div>
+                )}
+                <h3 className="mt-3 font-display text-2xl tracking-wide">{p.title}</h3>
                 <p className="mt-2 text-sm text-white/60 leading-relaxed">{p.desc}</p>
                 <div className="mt-5 inline-flex items-center text-xs uppercase tracking-[0.2em] text-primary/80 group-hover:text-primary transition">
                   Explore <ChevronRight className="ml-1 h-3.5 w-3.5" />
@@ -405,49 +409,8 @@ function Programs() {
 }
 
 function Membership() {
-  const plans = [
-    {
-      name: "Monthly",
-      price: 49,
-      period: "/mo",
-      tag: "Flexible",
-      feats: ["24/7 gym access", "All group classes", "Locker & towel service", "Free WiFi & coffee bar"],
-    },
-    {
-      name: "Quarterly",
-      price: 129,
-      period: "/3 mo",
-      tag: "Popular",
-      feats: ["Everything in Monthly", "1 personal training session", "Body composition scan", "Nutrition guide"],
-    },
-    {
-      name: "Elite Annual",
-      price: 449,
-      period: "/yr",
-      tag: "Best Value",
-      recommended: true,
-      feats: [
-        "Everything in Quarterly",
-        "6 personal training sessions",
-        "Custom training program",
-        "Recovery lounge access",
-        "Guest passes (12/yr)",
-      ],
-    },
-    {
-      name: "Signature",
-      price: 199,
-      period: "/mo",
-      tag: "Premium",
-      feats: [
-        "Unlimited personal training",
-        "Dedicated head coach",
-        "Weekly nutrition coaching",
-        "Priority booking",
-        "InBody scan & monthly review",
-      ],
-    },
-  ];
+  const plans = PLANS;
+
   return (
     <section id="membership" className="relative py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-5">
@@ -458,7 +421,7 @@ function Membership() {
               CHOOSE YOUR <span className="text-gradient-red">EDGE</span>.
             </h2>
             <p className="mt-5 text-white/70 text-lg">
-              Every plan includes 24/7 access and every group class. No contracts, no hidden fees.
+              Transparent pricing in Indian Rupees. Every plan includes full access to our weight-lifting and strength training floor.
             </p>
           </div>
         </Reveal>
@@ -481,7 +444,7 @@ function Membership() {
                 <div className="text-xs uppercase tracking-[0.25em] text-white/50">{p.tag}</div>
                 <h3 className="mt-2 font-display text-3xl">{p.name}</h3>
                 <div className="mt-4 flex items-end gap-1">
-                  <span className="font-display text-5xl text-white">${p.price}</span>
+                  <span className="font-display text-5xl text-white">₹{p.price}</span>
                   <span className="text-white/50 mb-1.5">{p.period}</span>
                 </div>
                 <ul className="mt-6 space-y-3 text-sm text-white/75 flex-1">
@@ -503,7 +466,7 @@ function Membership() {
           ))}
         </div>
         <p className="mt-8 text-center text-sm text-white/50">
-          All memberships come with a 7-day money-back guarantee. Cancel anytime.
+          Start with a free {BRAND.trialDays}-day trial. No hidden charges, no lock-in period.
         </p>
       </div>
     </section>
@@ -511,12 +474,8 @@ function Membership() {
 }
 
 function Trainers() {
-  const list = [
-    { img: trainer1, name: "Marcus Vale", role: "Head Strength Coach", tags: ["Powerlifting", "Hypertrophy"], exp: "12 yrs" },
-    { img: trainer2, name: "Elena Ross", role: "Performance Coach", tags: ["HIIT", "Fat Loss"], exp: "9 yrs" },
-    { img: trainer3, name: "Kai Bennett", role: "CrossFit Lead", tags: ["CrossFit", "Olympic Lifts"], exp: "10 yrs" },
-    { img: trainer4, name: "Sophia Chen", role: "Mobility & Recovery", tags: ["Yoga", "Rehab"], exp: "8 yrs" },
-  ];
+  const list = TRAINERS;
+
   return (
     <section id="trainers" className="relative py-24 md:py-32 bg-black/40">
       <div className="mx-auto max-w-7xl px-5">
@@ -529,15 +488,19 @@ function Trainers() {
               </h2>
             </div>
             <p className="text-white/60 max-w-md">
-              Certified, competitive, and obsessed with your progress. Every coach at IronForge
-              is hand-picked and continuously trained.
+              Led by Head Trainer Harshvardhan Koli — specialists in weight lifting, strength
+              training and powerlifting, focused entirely on your progress.
             </p>
           </div>
         </Reveal>
-        <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {list.map((t, i) => (
             <Reveal key={t.name} delay={i * 80}>
-              <div className="group relative overflow-hidden rounded-3xl border border-white/10 aspect-[4/5]">
+              <div
+                className={`group relative overflow-hidden rounded-3xl border aspect-[4/5] ${
+                  "isHead" in t && t.isHead ? "border-primary/70 glow-red" : "border-white/10"
+                }`}
+              >
                 <img
                   src={t.img}
                   alt={`${t.name} — ${t.role}`}
@@ -547,8 +510,13 @@ function Trainers() {
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                {"isHead" in t && t.isHead && (
+                  <div className="absolute top-4 left-4 rounded-full bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-white shadow-lg">
+                    Head Trainer
+                  </div>
+                )}
                 <div className="absolute inset-x-0 bottom-0 p-5">
-                  <div className="text-[10px] uppercase tracking-[0.3em] text-primary">{t.exp} experience</div>
+                  <div className="text-[10px] uppercase tracking-[0.3em] text-primary">{t.exp}</div>
                   <h3 className="font-display text-2xl mt-1">{t.name}</h3>
                   <div className="text-sm text-white/70">{t.role}</div>
                   <div className="mt-3 flex flex-wrap gap-1.5">
@@ -642,7 +610,7 @@ function BMI() {
               {[
                 "Custom workout programs updated every 4 weeks",
                 "Personalized macro & meal guidance",
-                "Progress tracking via the IronForge app",
+                "Progress tracking with monthly strength benchmarks",
                 "Direct message access to your coach",
               ].map((t) => (
                 <li key={t} className="flex gap-3 items-start">
@@ -664,12 +632,8 @@ function BMI() {
 }
 
 function Gallery() {
-  const imgs = [
-    { src: g1, alt: "Deadlift under red light", cls: "row-span-2" },
-    { src: g4, alt: "Group HIIT class" },
-    { src: g2, alt: "Boxing bag training" },
-    { src: g3, alt: "Kettlebell training", cls: "row-span-2" },
-  ];
+  const imgs = GALLERY;
+
   return (
     <section id="gallery" className="relative py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-5">
@@ -705,23 +669,8 @@ function Gallery() {
 }
 
 function Testimonials() {
-  const items = [
-    {
-      name: "Jordan M.",
-      role: "Lost 22 kg in 6 months",
-      text: "IronForge changed my life. The coaches are elite and the community keeps you showing up on the days you don't feel like it.",
-    },
-    {
-      name: "Priya S.",
-      role: "First powerlifting meet",
-      text: "In 8 months I went from being scared of a barbell to competing. Best investment I've ever made in myself.",
-    },
-    {
-      name: "Diego R.",
-      role: "Executive member",
-      text: "Luxury facility, no ego culture, and coaches who actually respect your time. Nothing else in the city comes close.",
-    },
-  ];
+  const items = TESTIMONIALS;
+
   return (
     <section id="testimonials" className="relative py-24 md:py-32 bg-black/40">
       <div className="mx-auto max-w-7xl px-5">
@@ -763,11 +712,11 @@ function Testimonials() {
 
 function FAQ() {
   const items = [
-    { q: "Do you offer a free trial?", a: "Yes — every new member gets a free 7-day trial with full access to equipment, classes and a walkthrough with a coach." },
-    { q: "Are there long-term contracts?", a: "Never. All plans are month-to-month or pre-paid. Cancel anytime, no fees." },
-    { q: "What are your opening hours?", a: "Members enjoy 24/7 access, 365 days a year. Reception is staffed 6am–11pm daily." },
-    { q: "Is personal training included?", a: "Elite Annual and Signature plans include sessions. Any member can add PT à la carte." },
-    { q: "Do you have showers, lockers and parking?", a: "Yes — premium locker rooms with towel service, dry sauna, and free member parking." },
+    { q: "Do you offer a free trial?", a: `Yes — every new member gets a free ${BRAND.trialDays}-day trial with full access to the weight-lifting floor, strength zone and a walkthrough with a trainer.` },
+    { q: "Are there long-term contracts?", a: "No lock-in. All plans are monthly, quarterly or annual and paid upfront. No hidden charges." },
+    { q: "What are your timings?", a: CONTACT.hours + ". Timings may vary on public holidays." },
+    { q: "Is personal training included?", a: "Quarterly and Annual plans include sessions. Any member can add personal training separately." },
+    { q: "Is the gym beginner-friendly for women?", a: "Absolutely. Our trainers guide beginners through proper form step by step, and many of our members are women training with weights." },
   ];
   const [open, setOpen] = useState<number | null>(0);
   return (
@@ -826,10 +775,10 @@ function Contact() {
           </p>
           <div className="mt-8 space-y-4">
             {[
-              { icon: MapPin, label: "1420 Ironworks Ave, Downtown District" },
-              { icon: Phone, label: "+1 (555) 123-4567" },
-              { icon: Mail, label: "hello@ironforge.club" },
-              { icon: Clock, label: "Members 24/7 · Reception 6am–11pm" },
+              { icon: MapPin, label: CONTACT.address },
+              { icon: Phone, label: CONTACT.phone },
+              { icon: Mail, label: CONTACT.email },
+              { icon: Clock, label: CONTACT.hours },
             ].map((c) => (
               <div key={c.label} className="flex items-center gap-4">
                 <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
@@ -841,8 +790,8 @@ function Contact() {
           </div>
           <div className="mt-8 rounded-2xl overflow-hidden border border-white/10 aspect-[16/9]">
             <iframe
-              title="IronForge Location"
-              src="https://www.openstreetmap.org/export/embed.html?bbox=-74.02%2C40.70%2C-73.96%2C40.74&layer=mapnik"
+              title={`${BRAND.fullName} Location`}
+              src={CONTACT.mapEmbedUrl}
               className="h-full w-full grayscale-[70%] contrast-125"
               loading="lazy"
             />
@@ -860,9 +809,9 @@ function Contact() {
             <h3 className="font-display text-3xl">Book Your Free Trial</h3>
             <p className="text-white/60 text-sm mt-1">No contracts. No pressure. Just results.</p>
             <div className="mt-6 grid sm:grid-cols-2 gap-4">
-              <Field label="Full name" placeholder="Alex Morgan" />
-              <Field label="Phone" placeholder="+1 555 0100" />
-              <Field label="Email" type="email" placeholder="alex@email.com" className="sm:col-span-2" />
+              <Field label="Full name" placeholder="Rahul Sharma" />
+              <Field label="Phone" placeholder="+91 98765 43210" />
+              <Field label="Email" type="email" placeholder="you@gmail.com" className="sm:col-span-2" />
               <div className="sm:col-span-2">
                 <label className="text-xs uppercase tracking-widest text-white/60">Goal</label>
                 <select className="mt-2 w-full rounded-xl bg-input/60 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-primary transition">
@@ -883,7 +832,7 @@ function Contact() {
               </div>
             </div>
             <button type="submit" className="btn-primary mt-6 w-full">
-              Claim My Free 7-Day Trial <ChevronRight className="h-4 w-4" />
+              Claim My Free {BRAND.trialDays}-Day Trial <ChevronRight className="h-4 w-4" />
             </button>
             <p className="mt-3 text-xs text-white/40 text-center">
               We respect your privacy. No spam, ever.
@@ -921,11 +870,11 @@ function Footer() {
               <Dumbbell className="h-5 w-5 text-white" />
             </div>
             <span className="font-display text-2xl tracking-widest">
-              IRON<span className="text-primary">FORGE</span>
+              {BRAND.namePart1} <span className="text-primary">{BRAND.namePart2}</span>
             </span>
           </a>
           <p className="mt-4 text-sm text-white/60 max-w-xs">
-            The city's premier 24/7 fitness club. Where discipline is designed and results are built.
+            India's premium strength &amp; weight-lifting club. Where discipline is designed and results are built.
           </p>
           <div className="mt-5 flex gap-3">
             {[Instagram, Facebook, Twitter, Youtube].map((I, i) => (
@@ -948,10 +897,10 @@ function Footer() {
         <div>
           <h4 className="font-display text-lg tracking-widest">Opening Hours</h4>
           <ul className="mt-4 space-y-2 text-sm text-white/60">
-            <li className="flex justify-between"><span>Members</span><span className="text-primary">24/7</span></li>
-            <li className="flex justify-between"><span>Reception</span><span>6am – 11pm</span></li>
-            <li className="flex justify-between"><span>Classes</span><span>6am – 9pm</span></li>
-            <li className="flex justify-between"><span>Holidays</span><span>Open</span></li>
+            <li className="flex justify-between"><span>Mon – Sat</span><span className="text-primary">5am – 11pm</span></li>
+            <li className="flex justify-between"><span>Sunday</span><span>6am – 10pm</span></li>
+            <li className="flex justify-between"><span>Personal Training</span><span>By slot</span></li>
+            <li className="flex justify-between"><span>Public Holidays</span><span>Open</span></li>
           </ul>
         </div>
         <div>
@@ -974,7 +923,7 @@ function Footer() {
         </div>
       </div>
       <div className="mt-14 border-t border-white/5 pt-6 mx-auto max-w-7xl px-5 flex flex-wrap items-center justify-between gap-3 text-xs text-white/40">
-        <div>© {new Date().getFullYear()} IronForge Fitness Club. All rights reserved.</div>
+        <div>© {new Date().getFullYear()} {BRAND.fullName}. All rights reserved.</div>
         <div className="flex gap-5">
           <a href="#" className="hover:text-primary">Privacy</a>
           <a href="#" className="hover:text-primary">Terms</a>
