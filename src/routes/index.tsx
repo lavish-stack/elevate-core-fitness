@@ -914,11 +914,11 @@ function Footer() {
               <Dumbbell className="h-5 w-5 text-white" />
             </div>
             <span className="font-display text-2xl tracking-widest">
-              IRON<span className="text-primary">FORGE</span>
+              {BRAND.namePart1} <span className="text-primary">{BRAND.namePart2}</span>
             </span>
           </a>
           <p className="mt-4 text-sm text-white/60 max-w-xs">
-            The city's premier 24/7 fitness club. Where discipline is designed and results are built.
+            India's premium strength &amp; weight-lifting club. Where discipline is designed and results are built.
           </p>
           <div className="mt-5 flex gap-3">
             {[Instagram, Facebook, Twitter, Youtube].map((I, i) => (
