@@ -897,10 +897,10 @@ function Footer() {
         <div>
           <h4 className="font-display text-lg tracking-widest">Opening Hours</h4>
           <ul className="mt-4 space-y-2 text-sm text-white/60">
-            <li className="flex justify-between"><span>Members</span><span className="text-primary">24/7</span></li>
-            <li className="flex justify-between"><span>Reception</span><span>6am – 11pm</span></li>
-            <li className="flex justify-between"><span>Classes</span><span>6am – 9pm</span></li>
-            <li className="flex justify-between"><span>Holidays</span><span>Open</span></li>
+            <li className="flex justify-between"><span>Mon – Sat</span><span className="text-primary">5am – 11pm</span></li>
+            <li className="flex justify-between"><span>Sunday</span><span>6am – 10pm</span></li>
+            <li className="flex justify-between"><span>Personal Training</span><span>By slot</span></li>
+            <li className="flex justify-between"><span>Public Holidays</span><span>Open</span></li>
           </ul>
         </div>
         <div>
