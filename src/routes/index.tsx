@@ -38,17 +38,19 @@ import { BRAND, CONTACT, TRAINERS, GALLERY, PLANS, TESTIMONIALS } from "@/conten
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "IRONFORGE — Premium 24/7 Fitness Club" },
+      { title: "New Fitness Zone — Weight Lifting & Strength Training Gym" },
       {
         name: "description",
         content:
-          "IRONFORGE is a luxury 24/7 fitness club with elite coaches, world-class equipment and results-driven programs. Claim your free 7-day trial.",
+          "New Fitness Zone is a premium Indian fitness club specialising in weight lifting, strength training, muscle building and powerlifting. Claim your 2 days free trial.",
       },
-      { property: "og:title", content: "IRONFORGE — Premium 24/7 Fitness Club" },
+      { property: "og:title", content: "New Fitness Zone — Weight Lifting & Strength Training Gym" },
       {
         property: "og:description",
-        content: "Elite training. Premium equipment. Real results.",
+        content: "Premium strength training club led by Head Trainer Harshvardhan Koli. 2 days free trial.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Home,
