@@ -789,7 +789,72 @@ function FAQ() {
   );
 }
 
+const trialSchema = z.object({
+  full_name: z.string().trim().min(2, "Please enter your full name").max(100),
+  phone: z
+    .string()
+    .trim()
+    .min(7, "Please enter a valid phone number")
+    .max(20)
+    .regex(/^[0-9+\-\s()]+$/, "Phone can only contain numbers and + - ( )"),
+  email: z.string().trim().email("Enter a valid email address").max(255),
+  goal: z.string().trim().max(60),
+  message: z.string().trim().max(1000),
+});
+
 function Contact() {
+  const { settings } = useSiteSettings();
+  const [form, setForm] = useState({
+    full_name: "",
+    phone: "",
+    email: "",
+    goal: "Build muscle",
+    message: "",
+  });
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+  const set = (k: keyof typeof form) => (e: { target: { value: string } }) =>
+    setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = trialSchema.safeParse(form);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Please check the form");
+      return;
+    }
+    setBusy(true);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const v = parsed.data;
+      const { error } = await supabase.from("trial_registrations").insert({
+        user_id: sessionData.session?.user.id ?? null,
+        full_name: v.full_name,
+        phone: v.phone,
+        email: v.email,
+        goal: v.goal,
+      });
+      if (error) throw error;
+
+      if (v.message) {
+        await supabase.from("contact_messages").insert({
+          full_name: v.full_name,
+          phone: v.phone,
+          email: v.email,
+          subject: `Free trial enquiry · ${v.goal}`,
+          message: v.message,
+        });
+      }
+      setDone(true);
+      setForm({ full_name: "", phone: "", email: "", goal: "Build muscle", message: "" });
+      toast.success("Request received! A coach will reach out within 24 hours.");
+    } catch {
+      toast.error("Could not submit right now. Please try again or call us.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <section id="contact" className="relative py-24 md:py-32 bg-black/40">
       <div className="mx-auto max-w-7xl px-5 grid lg:grid-cols-2 gap-10">
@@ -803,10 +868,10 @@ function Contact() {
           </p>
           <div className="mt-8 space-y-4">
             {[
-              { icon: MapPin, label: CONTACT.address },
-              { icon: Phone, label: CONTACT.phone },
-              { icon: Mail, label: CONTACT.email },
-              { icon: Clock, label: CONTACT.hours },
+              { icon: MapPin, label: settings.address },
+              { icon: Phone, label: settings.phone },
+              { icon: Mail, label: settings.email },
+              { icon: Clock, label: settings.opening_hours },
             ].map((c) => (
               <div key={c.label} className="flex items-center gap-4">
                 <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
@@ -818,8 +883,8 @@ function Contact() {
           </div>
           <div className="mt-8 rounded-2xl overflow-hidden border border-white/10 aspect-[16/9]">
             <iframe
-              title={`${BRAND.fullName} Location`}
-              src={CONTACT.mapEmbedUrl}
+              title={`${settings.gym_name} Location`}
+              src={settings.map_embed_url ?? ""}
               className="h-full w-full grayscale-[70%] contrast-125"
               loading="lazy"
             />
@@ -827,22 +892,48 @@ function Contact() {
         </Reveal>
 
         <Reveal delay={100}>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              alert("Thanks! A coach will reach out within 24 hours.");
-            }}
-            className="card-premium p-8"
-          >
+          <form onSubmit={submit} className="card-premium p-8">
             <h3 className="font-display text-3xl">Book Your Free Trial</h3>
             <p className="text-white/60 text-sm mt-1">No contracts. No pressure. Just results.</p>
+            {done && (
+              <div className="mt-5 glass rounded-2xl p-4 text-sm text-white/80">
+                Thanks! Your free trial request is with our team — we'll call you within 24 hours.
+              </div>
+            )}
             <div className="mt-6 grid sm:grid-cols-2 gap-4">
-              <Field label="Full name" placeholder="Rahul Sharma" />
-              <Field label="Phone" placeholder="+91 98765 43210" />
-              <Field label="Email" type="email" placeholder="you@gmail.com" className="sm:col-span-2" />
+              <Field
+                label="Full name"
+                placeholder="Rahul Sharma"
+                value={form.full_name}
+                onChange={set("full_name")}
+                required
+                maxLength={100}
+              />
+              <Field
+                label="Phone"
+                placeholder="+91 98765 43210"
+                value={form.phone}
+                onChange={set("phone")}
+                required
+                maxLength={20}
+              />
+              <Field
+                label="Email"
+                type="email"
+                placeholder="you@gmail.com"
+                className="sm:col-span-2"
+                value={form.email}
+                onChange={set("email")}
+                required
+                maxLength={255}
+              />
               <div className="sm:col-span-2">
                 <label className="text-xs uppercase tracking-widest text-white/60">Goal</label>
-                <select className="mt-2 w-full rounded-xl bg-input/60 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-primary transition">
+                <select
+                  value={form.goal}
+                  onChange={set("goal")}
+                  className="mt-2 w-full rounded-xl bg-input/60 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-primary transition"
+                >
                   <option>Build muscle</option>
                   <option>Lose fat</option>
                   <option>Get stronger</option>
@@ -854,13 +945,17 @@ function Contact() {
                 <label className="text-xs uppercase tracking-widest text-white/60">Message</label>
                 <textarea
                   rows={4}
+                  value={form.message}
+                  onChange={set("message")}
+                  maxLength={1000}
                   placeholder="Tell us a bit about where you're starting from…"
                   className="mt-2 w-full rounded-xl bg-input/60 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-primary transition resize-none"
                 />
               </div>
             </div>
-            <button type="submit" className="btn-primary mt-6 w-full">
-              Claim My Free {BRAND.trialDays}-Day Trial <ChevronRight className="h-4 w-4" />
+            <button type="submit" disabled={busy} className="btn-primary mt-6 w-full disabled:opacity-60">
+              {busy ? "Sending…" : `Claim My Free ${settings.trial_days}-Day Trial`}
+              <ChevronRight className="h-4 w-4" />
             </button>
             <p className="mt-3 text-xs text-white/40 text-center">
               We respect your privacy. No spam, ever.
@@ -889,6 +984,13 @@ function Field({
 }
 
 function Footer() {
+  const { settings } = useSiteSettings();
+  const socials = [
+    { Icon: Instagram, href: settings.instagram_url },
+    { Icon: Facebook, href: settings.facebook_url },
+    { Icon: Twitter, href: null },
+    { Icon: Youtube, href: null },
+  ];
   return (
     <footer className="relative border-t border-white/10 pt-20 pb-8">
       <div className="mx-auto max-w-7xl px-5 grid md:grid-cols-4 gap-10">
@@ -898,16 +1000,23 @@ function Footer() {
               <Dumbbell className="h-5 w-5 text-white" />
             </div>
             <span className="font-display text-2xl tracking-widest">
-              {BRAND.namePart1} <span className="text-primary">{BRAND.namePart2}</span>
+              {settings.name_part1} <span className="text-primary">{settings.name_part2}</span>
             </span>
           </a>
           <p className="mt-4 text-sm text-white/60 max-w-xs">
             India's premium strength &amp; weight-lifting club. Where discipline is designed and results are built.
           </p>
           <div className="mt-5 flex gap-3">
-            {[Instagram, Facebook, Twitter, Youtube].map((I, i) => (
-              <a key={i} aria-label="social" href="#" className="grid h-10 w-10 place-items-center rounded-full glass hover:bg-primary hover:text-white transition">
-                <I className="h-4 w-4" />
+            {socials.map(({ Icon, href }, i) => (
+              <a
+                key={i}
+                aria-label="social"
+                href={href ?? "#"}
+                target={href ? "_blank" : undefined}
+                rel={href ? "noreferrer" : undefined}
+                className="grid h-10 w-10 place-items-center rounded-full glass hover:bg-primary hover:text-white transition"
+              >
+                <Icon className="h-4 w-4" />
               </a>
             ))}
           </div>
@@ -925,33 +1034,26 @@ function Footer() {
         <div>
           <h4 className="font-display text-lg tracking-widest">Opening Hours</h4>
           <ul className="mt-4 space-y-2 text-sm text-white/60">
-            <li className="flex justify-between"><span>Mon – Sat</span><span className="text-primary">5am – 11pm</span></li>
-            <li className="flex justify-between"><span>Sunday</span><span>6am – 10pm</span></li>
+            <li className="flex justify-between gap-3">
+              <span>Gym Timings</span>
+              <span className="text-primary text-right">{settings.opening_hours}</span>
+            </li>
             <li className="flex justify-between"><span>Personal Training</span><span>By slot</span></li>
             <li className="flex justify-between"><span>Public Holidays</span><span>Open</span></li>
           </ul>
         </div>
         <div>
-          <h4 className="font-display text-lg tracking-widest">Newsletter</h4>
-          <p className="mt-4 text-sm text-white/60">Weekly training tips, drops and member-only deals.</p>
-          <form
-            onSubmit={(e) => { e.preventDefault(); alert("Subscribed!"); }}
-            className="mt-4 flex glass rounded-full p-1"
-          >
-            <input
-              type="email"
-              required
-              placeholder="you@email.com"
-              className="flex-1 bg-transparent px-4 py-2 text-sm focus:outline-none placeholder:text-white/40"
-            />
-            <button className="rounded-full bg-primary px-4 py-2 text-sm font-semibold hover:brightness-110 transition">
-              Join
-            </button>
-          </form>
+          <h4 className="font-display text-lg tracking-widest">Members</h4>
+          <p className="mt-4 text-sm text-white/60">
+            Manage your membership, bookings and digital card.
+          </p>
+          <Link to="/auth" className="btn-ghost mt-4 inline-flex text-sm !py-2.5 !px-5">
+            Member Login <ChevronRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
       <div className="mt-14 border-t border-white/5 pt-6 mx-auto max-w-7xl px-5 flex flex-wrap items-center justify-between gap-3 text-xs text-white/40">
-        <div>© {new Date().getFullYear()} {BRAND.fullName}. All rights reserved.</div>
+        <div>© {new Date().getFullYear()} {settings.gym_name}. All rights reserved.</div>
         <div className="flex gap-5">
           <a href="#" className="hover:text-primary">Privacy</a>
           <a href="#" className="hover:text-primary">Terms</a>
