@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Dumbbell,
@@ -23,6 +23,7 @@ import {
   ArrowUp,
   Menu,
   X,
+  User,
   MessageCircle,
   Play,
   ArrowDown,
@@ -33,7 +34,22 @@ import { Reveal } from "@/components/gym/Reveal";
 import { Counter } from "@/components/gym/Counter";
 import heroImg from "@/assets/hero-gym.jpg";
 import interiorImg from "@/assets/gym-interior.jpg";
-import { BRAND, CONTACT, TRAINERS, GALLERY, PLANS, TESTIMONIALS } from "@/content/site";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  useSiteSettings,
+  useTrainers,
+  useGallery,
+  useTestimonials,
+  usePrograms,
+  usePlans,
+  useFaqs,
+} from "@/lib/site-data";
+
+const ICONS: Record<string, typeof Dumbbell> = {
+  Dumbbell, Trophy, Zap, Target, Flame, Activity, Heart, Users,
+};
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -69,6 +85,7 @@ const NAV = [
 ];
 
 function Home() {
+  const { settings } = useSiteSettings();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showTop, setShowTop] = useState(false);
@@ -100,7 +117,7 @@ function Home() {
 
       {/* Floating actions */}
       <a
-        href={`https://wa.me/${CONTACT.whatsapp}`}
+        href={`https://wa.me/${settings.whatsapp}`}
         target="_blank"
         rel="noreferrer"
         aria-label="WhatsApp"
@@ -130,6 +147,8 @@ function Nav({
   menuOpen: boolean;
   setMenuOpen: (v: boolean) => void;
 }) {
+  const { settings } = useSiteSettings();
+  const { user } = useAuth();
   return (
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
@@ -142,7 +161,7 @@ function Nav({
             <Dumbbell className="h-5 w-5 text-white" />
           </div>
           <span className="font-display text-2xl tracking-widest">
-            {BRAND.namePart1} <span className="text-primary">{BRAND.namePart2}</span>
+            {settings.name_part1} <span className="text-primary">{settings.name_part2}</span>
           </span>
         </a>
         <nav className="hidden lg:flex items-center gap-7 text-sm">
@@ -157,6 +176,12 @@ function Nav({
           ))}
         </nav>
         <div className="flex items-center gap-3">
+          <Link
+            to={user ? "/dashboard" : "/auth"}
+            className="hidden md:inline-flex items-center gap-1.5 text-sm text-white/75 hover:text-primary transition-colors"
+          >
+            <User className="h-4 w-4" /> {user ? "Dashboard" : "Sign In"}
+          </Link>
           <a href="#membership" className="hidden md:inline-flex btn-primary text-sm !py-2.5 !px-5">
             Join Now <ChevronRight className="h-4 w-4" />
           </a>
@@ -183,6 +208,13 @@ function Nav({
                 {n.label}
               </a>
             ))}
+            <Link
+              to={user ? "/dashboard" : "/auth"}
+              onClick={() => setMenuOpen(false)}
+              className="py-3 px-3 rounded-lg text-white/85 hover:bg-white/5 hover:text-primary transition"
+            >
+              {user ? "My Dashboard" : "Sign In"}
+            </Link>
             <a
               href="#membership"
               onClick={() => setMenuOpen(false)}
@@ -198,10 +230,12 @@ function Nav({
 }
 
 function Hero() {
+  const { settings } = useSiteSettings();
+  const heroSrc = settings.hero_images[0] ?? heroImg;
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-24">
       <img
-        src={heroImg}
+        src={heroSrc}
         alt="Athlete training with barbell in dark red-lit gym"
         width={1920}
         height={1280}
@@ -214,7 +248,7 @@ function Hero() {
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-xs uppercase tracking-[0.25em] text-white/80 animate-float-up">
             <span className="h-2 w-2 rounded-full bg-primary animate-pulse-red" />
-            {BRAND.trialDays} Days Free Trial · Now Enrolling
+            {settings.trial_days} Days Free Trial · Now Enrolling
           </div>
           <h1
             className="font-display mt-6 text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.85] tracking-tight animate-float-up"
@@ -230,7 +264,7 @@ function Hero() {
             className="mt-7 max-w-xl text-lg text-white/70 animate-float-up"
             style={{ animationDelay: "180ms" }}
           >
-            {BRAND.fullName} is a premium weight lifting and strength training club led by Head
+            {settings.gym_name} is a premium weight lifting and strength training club led by Head
             Trainer Harshvardhan Koli. Proper coaching, serious equipment and real, measurable results.
           </p>
           <div
@@ -241,7 +275,7 @@ function Hero() {
               Join Now <ChevronRight className="h-4 w-4" />
             </a>
             <a href="#contact" className="btn-ghost">
-              <Play className="h-4 w-4" /> {BRAND.trialDays} Days Free Trial
+              <Play className="h-4 w-4" /> {settings.trial_days} Days Free Trial
             </a>
           </div>
         </div>
@@ -294,6 +328,7 @@ function Marquee() {
 }
 
 function About() {
+  const { settings } = useSiteSettings();
   const features = [
     { icon: Trophy, title: "Strength-First Facility", desc: "Racks, platforms and free weights built for serious lifting." },
     { icon: Zap, title: "Flexible Timings", desc: "Early morning to late night — train on your schedule." },
@@ -322,13 +357,13 @@ function About() {
         </Reveal>
         <div>
           <Reveal>
-            <span className="text-xs uppercase tracking-[0.3em] text-primary">About {BRAND.fullName}</span>
+            <span className="text-xs uppercase tracking-[0.3em] text-primary">About {settings.gym_name}</span>
             <h2 className="font-display mt-3 text-5xl md:text-6xl leading-[0.95]">
               BUILT FOR LIFTERS.<br />
               <span className="text-gradient-red">MADE FOR RESULTS.</span>
             </h2>
             <p className="mt-6 text-white/70 text-lg leading-relaxed">
-              {BRAND.fullName} is a high-end Indian fitness club built around weight lifting and
+              {settings.gym_name} is a high-end Indian fitness club built around weight lifting and
               strength training. Heavy-duty racks, quality barbells and expert coaching led by Head
               Trainer Harshvardhan Koli — so beginners and serious lifters both train the right way.
             </p>
@@ -353,16 +388,13 @@ function About() {
 }
 
 function Programs() {
-  const items = [
-    { icon: Dumbbell, title: "Weight Lifting", desc: "Our #1 specialty — barbell technique, progressive overload and serious lifting.", featured: true },
-    { icon: Trophy, title: "Strength Training", desc: "Our #1 specialty — squat, bench and deadlift programmed for real strength gains.", featured: true },
-    { icon: Zap, title: "Muscle Building", desc: "Hypertrophy programming built for clean, visible size and shape." },
-    { icon: Target, title: "Powerlifting", desc: "Competition-focused coaching on the big three lifts and meet prep." },
-    { icon: Flame, title: "Fat Loss", desc: "Strength-first fat loss that keeps your muscle while the weight drops." },
-    { icon: Activity, title: "Functional Fitness", desc: "Real-world movement patterns for pain-free everyday power." },
-    { icon: Heart, title: "Cardio & Conditioning", desc: "Endurance work that supports your lifting, not against it." },
-    { icon: Users, title: "Personal Training", desc: "1-on-1 coaching, custom plans and full accountability." },
-  ];
+  const { programs } = usePrograms();
+  const items = programs.map((p) => ({
+    icon: ICONS[p.icon ?? "Dumbbell"] ?? Dumbbell,
+    title: p.title,
+    desc: p.description,
+    featured: p.featured,
+  }));
   return (
     <section id="programs" className="relative py-24 md:py-32 bg-black/40">
       <div className="mx-auto max-w-7xl px-5">
@@ -383,13 +415,13 @@ function Programs() {
             <Reveal key={p.title} delay={(i % 4) * 80}>
               <div
                 className={`card-premium group p-6 h-full ${
-                  "featured" in p && p.featured ? "!border-primary/60 bg-gradient-to-b from-red-950/40 to-transparent" : ""
+                  p.featured ? "!border-primary/60 bg-gradient-to-b from-red-950/40 to-transparent" : ""
                 }`}
               >
                 <div className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-primary to-red-700 text-white shadow-lg group-hover:scale-110 transition-transform">
                   <p.icon className="h-6 w-6" />
                 </div>
-                {"featured" in p && p.featured && (
+                {p.featured && (
                   <div className="mt-4 inline-block rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-primary">
                     Our Specialty
                   </div>
@@ -409,7 +441,8 @@ function Programs() {
 }
 
 function Membership() {
-  const plans = PLANS;
+  const { plans } = usePlans();
+  const { settings } = useSiteSettings();
 
   return (
     <section id="membership" className="relative py-24 md:py-32">
@@ -466,7 +499,7 @@ function Membership() {
           ))}
         </div>
         <p className="mt-8 text-center text-sm text-white/50">
-          Start with a free {BRAND.trialDays}-day trial. No hidden charges, no lock-in period.
+          Start with a free {settings.trial_days}-day trial. No hidden charges, no lock-in period.
         </p>
       </div>
     </section>
@@ -474,7 +507,7 @@ function Membership() {
 }
 
 function Trainers() {
-  const list = TRAINERS;
+  const { trainers: list } = useTrainers();
 
   return (
     <section id="trainers" className="relative py-24 md:py-32 bg-black/40">
@@ -495,10 +528,10 @@ function Trainers() {
         </Reveal>
         <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {list.map((t, i) => (
-            <Reveal key={t.name} delay={i * 80}>
+            <Reveal key={t.id} delay={i * 80}>
               <div
                 className={`group relative overflow-hidden rounded-3xl border aspect-[4/5] ${
-                  "isHead" in t && t.isHead ? "border-primary/70 glow-red" : "border-white/10"
+                  t.isHead ? "border-primary/70 glow-red" : "border-white/10"
                 }`}
               >
                 <img
@@ -510,7 +543,7 @@ function Trainers() {
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                {"isHead" in t && t.isHead && (
+                {t.isHead && (
                   <div className="absolute top-4 left-4 rounded-full bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-white shadow-lg">
                     Head Trainer
                   </div>
@@ -632,7 +665,7 @@ function BMI() {
 }
 
 function Gallery() {
-  const imgs = GALLERY;
+  const { gallery: imgs } = useGallery();
 
   return (
     <section id="gallery" className="relative py-24 md:py-32">
@@ -647,7 +680,7 @@ function Gallery() {
         </Reveal>
         <div className="mt-12 grid grid-cols-2 md:grid-cols-4 auto-rows-[180px] md:auto-rows-[220px] gap-4">
           {imgs.map((im, i) => (
-            <Reveal key={i} delay={i * 60} className={`${im.cls ?? ""} group`}>
+            <Reveal key={im.id} delay={i * 60} className={`${im.cls ?? ""} group`}>
               <div className="relative h-full w-full overflow-hidden rounded-2xl border border-white/10">
                 <img
                   src={im.src}
@@ -669,7 +702,7 @@ function Gallery() {
 }
 
 function Testimonials() {
-  const items = TESTIMONIALS;
+  const { testimonials: items } = useTestimonials();
 
   return (
     <section id="testimonials" className="relative py-24 md:py-32 bg-black/40">
@@ -684,7 +717,7 @@ function Testimonials() {
         </Reveal>
         <div className="mt-14 grid md:grid-cols-3 gap-6">
           {items.map((t, i) => (
-            <Reveal key={t.name} delay={i * 100}>
+            <Reveal key={t.id} delay={i * 100}>
               <div className="card-premium p-7 h-full">
                 <div className="flex gap-1 text-primary">
                   {Array.from({ length: 5 }).map((_, k) => (
@@ -711,13 +744,8 @@ function Testimonials() {
 }
 
 function FAQ() {
-  const items = [
-    { q: "Do you offer a free trial?", a: `Yes — every new member gets a free ${BRAND.trialDays}-day trial with full access to the weight-lifting floor, strength zone and a walkthrough with a trainer.` },
-    { q: "Are there long-term contracts?", a: "No lock-in. All plans are monthly, quarterly or annual and paid upfront. No hidden charges." },
-    { q: "What are your timings?", a: CONTACT.hours + ". Timings may vary on public holidays." },
-    { q: "Is personal training included?", a: "Quarterly and Annual plans include sessions. Any member can add personal training separately." },
-    { q: "Is the gym beginner-friendly for women?", a: "Absolutely. Our trainers guide beginners through proper form step by step, and many of our members are women training with weights." },
-  ];
+  const { settings } = useSiteSettings();
+  const { faqs: items } = useFaqs(settings.trial_days, settings.opening_hours);
   const [open, setOpen] = useState<number | null>(0);
   return (
     <section id="faq" className="relative py-24 md:py-32">
@@ -732,7 +760,7 @@ function FAQ() {
         </Reveal>
         <div className="mt-12 space-y-3">
           {items.map((it, i) => (
-            <Reveal key={it.q} delay={i * 60}>
+            <Reveal key={it.id} delay={i * 60}>
               <div className="card-premium overflow-hidden">
                 <button
                   onClick={() => setOpen(open === i ? null : i)}
