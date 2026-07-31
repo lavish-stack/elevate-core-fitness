@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Dumbbell,
@@ -23,6 +23,7 @@ import {
   ArrowUp,
   Menu,
   X,
+  User,
   MessageCircle,
   Play,
   ArrowDown,
@@ -33,7 +34,23 @@ import { Reveal } from "@/components/gym/Reveal";
 import { Counter } from "@/components/gym/Counter";
 import heroImg from "@/assets/hero-gym.jpg";
 import interiorImg from "@/assets/gym-interior.jpg";
-import { BRAND, CONTACT, TRAINERS, GALLERY, PLANS, TESTIMONIALS } from "@/content/site";
+import { z } from "zod";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  useSiteSettings,
+  useTrainers,
+  useGallery,
+  useTestimonials,
+  usePrograms,
+  usePlans,
+  useFaqs,
+} from "@/lib/site-data";
+
+const ICONS: Record<string, typeof Dumbbell> = {
+  Dumbbell, Trophy, Zap, Target, Flame, Activity, Heart, Users,
+};
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -69,6 +86,7 @@ const NAV = [
 ];
 
 function Home() {
+  const { settings } = useSiteSettings();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showTop, setShowTop] = useState(false);
@@ -100,7 +118,7 @@ function Home() {
 
       {/* Floating actions */}
       <a
-        href={`https://wa.me/${CONTACT.whatsapp}`}
+        href={`https://wa.me/${settings.whatsapp}`}
         target="_blank"
         rel="noreferrer"
         aria-label="WhatsApp"
@@ -130,6 +148,8 @@ function Nav({
   menuOpen: boolean;
   setMenuOpen: (v: boolean) => void;
 }) {
+  const { settings } = useSiteSettings();
+  const { user } = useAuth();
   return (
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
@@ -142,7 +162,7 @@ function Nav({
             <Dumbbell className="h-5 w-5 text-white" />
           </div>
           <span className="font-display text-2xl tracking-widest">
-            {BRAND.namePart1} <span className="text-primary">{BRAND.namePart2}</span>
+            {settings.name_part1} <span className="text-primary">{settings.name_part2}</span>
           </span>
         </a>
         <nav className="hidden lg:flex items-center gap-7 text-sm">
@@ -157,6 +177,12 @@ function Nav({
           ))}
         </nav>
         <div className="flex items-center gap-3">
+          <Link
+            to={user ? "/dashboard" : "/auth"}
+            className="hidden md:inline-flex items-center gap-1.5 text-sm text-white/75 hover:text-primary transition-colors"
+          >
+            <User className="h-4 w-4" /> {user ? "Dashboard" : "Sign In"}
+          </Link>
           <a href="#membership" className="hidden md:inline-flex btn-primary text-sm !py-2.5 !px-5">
             Join Now <ChevronRight className="h-4 w-4" />
           </a>
@@ -183,6 +209,13 @@ function Nav({
                 {n.label}
               </a>
             ))}
+            <Link
+              to={user ? "/dashboard" : "/auth"}
+              onClick={() => setMenuOpen(false)}
+              className="py-3 px-3 rounded-lg text-white/85 hover:bg-white/5 hover:text-primary transition"
+            >
+              {user ? "My Dashboard" : "Sign In"}
+            </Link>
             <a
               href="#membership"
               onClick={() => setMenuOpen(false)}
@@ -198,10 +231,12 @@ function Nav({
 }
 
 function Hero() {
+  const { settings } = useSiteSettings();
+  const heroSrc = settings.hero_images[0] ?? heroImg;
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-24">
       <img
-        src={heroImg}
+        src={heroSrc}
         alt="Athlete training with barbell in dark red-lit gym"
         width={1920}
         height={1280}
@@ -214,7 +249,7 @@ function Hero() {
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-xs uppercase tracking-[0.25em] text-white/80 animate-float-up">
             <span className="h-2 w-2 rounded-full bg-primary animate-pulse-red" />
-            {BRAND.trialDays} Days Free Trial · Now Enrolling
+            {settings.trial_days} Days Free Trial · Now Enrolling
           </div>
           <h1
             className="font-display mt-6 text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.85] tracking-tight animate-float-up"
@@ -230,7 +265,7 @@ function Hero() {
             className="mt-7 max-w-xl text-lg text-white/70 animate-float-up"
             style={{ animationDelay: "180ms" }}
           >
-            {BRAND.fullName} is a premium weight lifting and strength training club led by Head
+            {settings.gym_name} is a premium weight lifting and strength training club led by Head
             Trainer Harshvardhan Koli. Proper coaching, serious equipment and real, measurable results.
           </p>
           <div
@@ -241,7 +276,7 @@ function Hero() {
               Join Now <ChevronRight className="h-4 w-4" />
             </a>
             <a href="#contact" className="btn-ghost">
-              <Play className="h-4 w-4" /> {BRAND.trialDays} Days Free Trial
+              <Play className="h-4 w-4" /> {settings.trial_days} Days Free Trial
             </a>
           </div>
         </div>
@@ -294,6 +329,7 @@ function Marquee() {
 }
 
 function About() {
+  const { settings } = useSiteSettings();
   const features = [
     { icon: Trophy, title: "Strength-First Facility", desc: "Racks, platforms and free weights built for serious lifting." },
     { icon: Zap, title: "Flexible Timings", desc: "Early morning to late night — train on your schedule." },
@@ -322,13 +358,13 @@ function About() {
         </Reveal>
         <div>
           <Reveal>
-            <span className="text-xs uppercase tracking-[0.3em] text-primary">About {BRAND.fullName}</span>
+            <span className="text-xs uppercase tracking-[0.3em] text-primary">About {settings.gym_name}</span>
             <h2 className="font-display mt-3 text-5xl md:text-6xl leading-[0.95]">
               BUILT FOR LIFTERS.<br />
               <span className="text-gradient-red">MADE FOR RESULTS.</span>
             </h2>
             <p className="mt-6 text-white/70 text-lg leading-relaxed">
-              {BRAND.fullName} is a high-end Indian fitness club built around weight lifting and
+              {settings.gym_name} is a high-end Indian fitness club built around weight lifting and
               strength training. Heavy-duty racks, quality barbells and expert coaching led by Head
               Trainer Harshvardhan Koli — so beginners and serious lifters both train the right way.
             </p>
@@ -353,16 +389,13 @@ function About() {
 }
 
 function Programs() {
-  const items = [
-    { icon: Dumbbell, title: "Weight Lifting", desc: "Our #1 specialty — barbell technique, progressive overload and serious lifting.", featured: true },
-    { icon: Trophy, title: "Strength Training", desc: "Our #1 specialty — squat, bench and deadlift programmed for real strength gains.", featured: true },
-    { icon: Zap, title: "Muscle Building", desc: "Hypertrophy programming built for clean, visible size and shape." },
-    { icon: Target, title: "Powerlifting", desc: "Competition-focused coaching on the big three lifts and meet prep." },
-    { icon: Flame, title: "Fat Loss", desc: "Strength-first fat loss that keeps your muscle while the weight drops." },
-    { icon: Activity, title: "Functional Fitness", desc: "Real-world movement patterns for pain-free everyday power." },
-    { icon: Heart, title: "Cardio & Conditioning", desc: "Endurance work that supports your lifting, not against it." },
-    { icon: Users, title: "Personal Training", desc: "1-on-1 coaching, custom plans and full accountability." },
-  ];
+  const { programs } = usePrograms();
+  const items = programs.map((p) => ({
+    icon: ICONS[p.icon ?? "Dumbbell"] ?? Dumbbell,
+    title: p.title,
+    desc: p.description,
+    featured: p.featured,
+  }));
   return (
     <section id="programs" className="relative py-24 md:py-32 bg-black/40">
       <div className="mx-auto max-w-7xl px-5">
@@ -383,13 +416,13 @@ function Programs() {
             <Reveal key={p.title} delay={(i % 4) * 80}>
               <div
                 className={`card-premium group p-6 h-full ${
-                  "featured" in p && p.featured ? "!border-primary/60 bg-gradient-to-b from-red-950/40 to-transparent" : ""
+                  p.featured ? "!border-primary/60 bg-gradient-to-b from-red-950/40 to-transparent" : ""
                 }`}
               >
                 <div className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-primary to-red-700 text-white shadow-lg group-hover:scale-110 transition-transform">
                   <p.icon className="h-6 w-6" />
                 </div>
-                {"featured" in p && p.featured && (
+                {p.featured && (
                   <div className="mt-4 inline-block rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-primary">
                     Our Specialty
                   </div>
@@ -409,7 +442,8 @@ function Programs() {
 }
 
 function Membership() {
-  const plans = PLANS;
+  const { plans } = usePlans();
+  const { settings } = useSiteSettings();
 
   return (
     <section id="membership" className="relative py-24 md:py-32">
@@ -466,7 +500,7 @@ function Membership() {
           ))}
         </div>
         <p className="mt-8 text-center text-sm text-white/50">
-          Start with a free {BRAND.trialDays}-day trial. No hidden charges, no lock-in period.
+          Start with a free {settings.trial_days}-day trial. No hidden charges, no lock-in period.
         </p>
       </div>
     </section>
@@ -474,7 +508,7 @@ function Membership() {
 }
 
 function Trainers() {
-  const list = TRAINERS;
+  const { trainers: list } = useTrainers();
 
   return (
     <section id="trainers" className="relative py-24 md:py-32 bg-black/40">
@@ -495,10 +529,10 @@ function Trainers() {
         </Reveal>
         <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {list.map((t, i) => (
-            <Reveal key={t.name} delay={i * 80}>
+            <Reveal key={t.id} delay={i * 80}>
               <div
                 className={`group relative overflow-hidden rounded-3xl border aspect-[4/5] ${
-                  "isHead" in t && t.isHead ? "border-primary/70 glow-red" : "border-white/10"
+                  t.isHead ? "border-primary/70 glow-red" : "border-white/10"
                 }`}
               >
                 <img
@@ -510,7 +544,7 @@ function Trainers() {
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                {"isHead" in t && t.isHead && (
+                {t.isHead && (
                   <div className="absolute top-4 left-4 rounded-full bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-white shadow-lg">
                     Head Trainer
                   </div>
@@ -632,7 +666,7 @@ function BMI() {
 }
 
 function Gallery() {
-  const imgs = GALLERY;
+  const { gallery: imgs } = useGallery();
 
   return (
     <section id="gallery" className="relative py-24 md:py-32">
@@ -647,7 +681,7 @@ function Gallery() {
         </Reveal>
         <div className="mt-12 grid grid-cols-2 md:grid-cols-4 auto-rows-[180px] md:auto-rows-[220px] gap-4">
           {imgs.map((im, i) => (
-            <Reveal key={i} delay={i * 60} className={`${im.cls ?? ""} group`}>
+            <Reveal key={im.id} delay={i * 60} className={`${im.cls ?? ""} group`}>
               <div className="relative h-full w-full overflow-hidden rounded-2xl border border-white/10">
                 <img
                   src={im.src}
@@ -669,7 +703,7 @@ function Gallery() {
 }
 
 function Testimonials() {
-  const items = TESTIMONIALS;
+  const { testimonials: items } = useTestimonials();
 
   return (
     <section id="testimonials" className="relative py-24 md:py-32 bg-black/40">
@@ -684,7 +718,7 @@ function Testimonials() {
         </Reveal>
         <div className="mt-14 grid md:grid-cols-3 gap-6">
           {items.map((t, i) => (
-            <Reveal key={t.name} delay={i * 100}>
+            <Reveal key={t.id} delay={i * 100}>
               <div className="card-premium p-7 h-full">
                 <div className="flex gap-1 text-primary">
                   {Array.from({ length: 5 }).map((_, k) => (
@@ -711,13 +745,8 @@ function Testimonials() {
 }
 
 function FAQ() {
-  const items = [
-    { q: "Do you offer a free trial?", a: `Yes — every new member gets a free ${BRAND.trialDays}-day trial with full access to the weight-lifting floor, strength zone and a walkthrough with a trainer.` },
-    { q: "Are there long-term contracts?", a: "No lock-in. All plans are monthly, quarterly or annual and paid upfront. No hidden charges." },
-    { q: "What are your timings?", a: CONTACT.hours + ". Timings may vary on public holidays." },
-    { q: "Is personal training included?", a: "Quarterly and Annual plans include sessions. Any member can add personal training separately." },
-    { q: "Is the gym beginner-friendly for women?", a: "Absolutely. Our trainers guide beginners through proper form step by step, and many of our members are women training with weights." },
-  ];
+  const { settings } = useSiteSettings();
+  const { faqs: items } = useFaqs(settings.trial_days, settings.opening_hours);
   const [open, setOpen] = useState<number | null>(0);
   return (
     <section id="faq" className="relative py-24 md:py-32">
@@ -732,7 +761,7 @@ function FAQ() {
         </Reveal>
         <div className="mt-12 space-y-3">
           {items.map((it, i) => (
-            <Reveal key={it.q} delay={i * 60}>
+            <Reveal key={it.id} delay={i * 60}>
               <div className="card-premium overflow-hidden">
                 <button
                   onClick={() => setOpen(open === i ? null : i)}
@@ -761,7 +790,72 @@ function FAQ() {
   );
 }
 
+const trialSchema = z.object({
+  full_name: z.string().trim().min(2, "Please enter your full name").max(100),
+  phone: z
+    .string()
+    .trim()
+    .min(7, "Please enter a valid phone number")
+    .max(20)
+    .regex(/^[0-9+\-\s()]+$/, "Phone can only contain numbers and + - ( )"),
+  email: z.string().trim().email("Enter a valid email address").max(255),
+  goal: z.string().trim().max(60),
+  message: z.string().trim().max(1000),
+});
+
 function Contact() {
+  const { settings } = useSiteSettings();
+  const [form, setForm] = useState({
+    full_name: "",
+    phone: "",
+    email: "",
+    goal: "Build muscle",
+    message: "",
+  });
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+  const set = (k: keyof typeof form) => (e: { target: { value: string } }) =>
+    setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = trialSchema.safeParse(form);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Please check the form");
+      return;
+    }
+    setBusy(true);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const v = parsed.data;
+      const { error } = await supabase.from("trial_registrations").insert({
+        user_id: sessionData.session?.user.id ?? null,
+        full_name: v.full_name,
+        phone: v.phone,
+        email: v.email,
+        goal: v.goal,
+      });
+      if (error) throw error;
+
+      if (v.message) {
+        await supabase.from("contact_messages").insert({
+          full_name: v.full_name,
+          phone: v.phone,
+          email: v.email,
+          subject: `Free trial enquiry · ${v.goal}`,
+          message: v.message,
+        });
+      }
+      setDone(true);
+      setForm({ full_name: "", phone: "", email: "", goal: "Build muscle", message: "" });
+      toast.success("Request received! A coach will reach out within 24 hours.");
+    } catch {
+      toast.error("Could not submit right now. Please try again or call us.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <section id="contact" className="relative py-24 md:py-32 bg-black/40">
       <div className="mx-auto max-w-7xl px-5 grid lg:grid-cols-2 gap-10">
@@ -775,10 +869,10 @@ function Contact() {
           </p>
           <div className="mt-8 space-y-4">
             {[
-              { icon: MapPin, label: CONTACT.address },
-              { icon: Phone, label: CONTACT.phone },
-              { icon: Mail, label: CONTACT.email },
-              { icon: Clock, label: CONTACT.hours },
+              { icon: MapPin, label: settings.address },
+              { icon: Phone, label: settings.phone },
+              { icon: Mail, label: settings.email },
+              { icon: Clock, label: settings.opening_hours },
             ].map((c) => (
               <div key={c.label} className="flex items-center gap-4">
                 <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
@@ -790,8 +884,8 @@ function Contact() {
           </div>
           <div className="mt-8 rounded-2xl overflow-hidden border border-white/10 aspect-[16/9]">
             <iframe
-              title={`${BRAND.fullName} Location`}
-              src={CONTACT.mapEmbedUrl}
+              title={`${settings.gym_name} Location`}
+              src={settings.map_embed_url ?? ""}
               className="h-full w-full grayscale-[70%] contrast-125"
               loading="lazy"
             />
@@ -799,22 +893,48 @@ function Contact() {
         </Reveal>
 
         <Reveal delay={100}>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              alert("Thanks! A coach will reach out within 24 hours.");
-            }}
-            className="card-premium p-8"
-          >
+          <form onSubmit={submit} className="card-premium p-8">
             <h3 className="font-display text-3xl">Book Your Free Trial</h3>
             <p className="text-white/60 text-sm mt-1">No contracts. No pressure. Just results.</p>
+            {done && (
+              <div className="mt-5 glass rounded-2xl p-4 text-sm text-white/80">
+                Thanks! Your free trial request is with our team — we'll call you within 24 hours.
+              </div>
+            )}
             <div className="mt-6 grid sm:grid-cols-2 gap-4">
-              <Field label="Full name" placeholder="Rahul Sharma" />
-              <Field label="Phone" placeholder="+91 98765 43210" />
-              <Field label="Email" type="email" placeholder="you@gmail.com" className="sm:col-span-2" />
+              <Field
+                label="Full name"
+                placeholder="Rahul Sharma"
+                value={form.full_name}
+                onChange={set("full_name")}
+                required
+                maxLength={100}
+              />
+              <Field
+                label="Phone"
+                placeholder="+91 98765 43210"
+                value={form.phone}
+                onChange={set("phone")}
+                required
+                maxLength={20}
+              />
+              <Field
+                label="Email"
+                type="email"
+                placeholder="you@gmail.com"
+                className="sm:col-span-2"
+                value={form.email}
+                onChange={set("email")}
+                required
+                maxLength={255}
+              />
               <div className="sm:col-span-2">
                 <label className="text-xs uppercase tracking-widest text-white/60">Goal</label>
-                <select className="mt-2 w-full rounded-xl bg-input/60 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-primary transition">
+                <select
+                  value={form.goal}
+                  onChange={set("goal")}
+                  className="mt-2 w-full rounded-xl bg-input/60 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-primary transition"
+                >
                   <option>Build muscle</option>
                   <option>Lose fat</option>
                   <option>Get stronger</option>
@@ -826,13 +946,17 @@ function Contact() {
                 <label className="text-xs uppercase tracking-widest text-white/60">Message</label>
                 <textarea
                   rows={4}
+                  value={form.message}
+                  onChange={set("message")}
+                  maxLength={1000}
                   placeholder="Tell us a bit about where you're starting from…"
                   className="mt-2 w-full rounded-xl bg-input/60 border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-primary transition resize-none"
                 />
               </div>
             </div>
-            <button type="submit" className="btn-primary mt-6 w-full">
-              Claim My Free {BRAND.trialDays}-Day Trial <ChevronRight className="h-4 w-4" />
+            <button type="submit" disabled={busy} className="btn-primary mt-6 w-full disabled:opacity-60">
+              {busy ? "Sending…" : `Claim My Free ${settings.trial_days}-Day Trial`}
+              <ChevronRight className="h-4 w-4" />
             </button>
             <p className="mt-3 text-xs text-white/40 text-center">
               We respect your privacy. No spam, ever.
@@ -861,6 +985,13 @@ function Field({
 }
 
 function Footer() {
+  const { settings } = useSiteSettings();
+  const socials = [
+    { Icon: Instagram, href: settings.instagram_url },
+    { Icon: Facebook, href: settings.facebook_url },
+    { Icon: Twitter, href: null },
+    { Icon: Youtube, href: null },
+  ];
   return (
     <footer className="relative border-t border-white/10 pt-20 pb-8">
       <div className="mx-auto max-w-7xl px-5 grid md:grid-cols-4 gap-10">
@@ -870,16 +1001,23 @@ function Footer() {
               <Dumbbell className="h-5 w-5 text-white" />
             </div>
             <span className="font-display text-2xl tracking-widest">
-              {BRAND.namePart1} <span className="text-primary">{BRAND.namePart2}</span>
+              {settings.name_part1} <span className="text-primary">{settings.name_part2}</span>
             </span>
           </a>
           <p className="mt-4 text-sm text-white/60 max-w-xs">
             India's premium strength &amp; weight-lifting club. Where discipline is designed and results are built.
           </p>
           <div className="mt-5 flex gap-3">
-            {[Instagram, Facebook, Twitter, Youtube].map((I, i) => (
-              <a key={i} aria-label="social" href="#" className="grid h-10 w-10 place-items-center rounded-full glass hover:bg-primary hover:text-white transition">
-                <I className="h-4 w-4" />
+            {socials.map(({ Icon, href }, i) => (
+              <a
+                key={i}
+                aria-label="social"
+                href={href ?? "#"}
+                target={href ? "_blank" : undefined}
+                rel={href ? "noreferrer" : undefined}
+                className="grid h-10 w-10 place-items-center rounded-full glass hover:bg-primary hover:text-white transition"
+              >
+                <Icon className="h-4 w-4" />
               </a>
             ))}
           </div>
@@ -897,33 +1035,26 @@ function Footer() {
         <div>
           <h4 className="font-display text-lg tracking-widest">Opening Hours</h4>
           <ul className="mt-4 space-y-2 text-sm text-white/60">
-            <li className="flex justify-between"><span>Mon – Sat</span><span className="text-primary">5am – 11pm</span></li>
-            <li className="flex justify-between"><span>Sunday</span><span>6am – 10pm</span></li>
+            <li className="flex justify-between gap-3">
+              <span>Gym Timings</span>
+              <span className="text-primary text-right">{settings.opening_hours}</span>
+            </li>
             <li className="flex justify-between"><span>Personal Training</span><span>By slot</span></li>
             <li className="flex justify-between"><span>Public Holidays</span><span>Open</span></li>
           </ul>
         </div>
         <div>
-          <h4 className="font-display text-lg tracking-widest">Newsletter</h4>
-          <p className="mt-4 text-sm text-white/60">Weekly training tips, drops and member-only deals.</p>
-          <form
-            onSubmit={(e) => { e.preventDefault(); alert("Subscribed!"); }}
-            className="mt-4 flex glass rounded-full p-1"
-          >
-            <input
-              type="email"
-              required
-              placeholder="you@email.com"
-              className="flex-1 bg-transparent px-4 py-2 text-sm focus:outline-none placeholder:text-white/40"
-            />
-            <button className="rounded-full bg-primary px-4 py-2 text-sm font-semibold hover:brightness-110 transition">
-              Join
-            </button>
-          </form>
+          <h4 className="font-display text-lg tracking-widest">Members</h4>
+          <p className="mt-4 text-sm text-white/60">
+            Manage your membership, bookings and digital card.
+          </p>
+          <Link to="/auth" className="btn-ghost mt-4 inline-flex text-sm !py-2.5 !px-5">
+            Member Login <ChevronRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
       <div className="mt-14 border-t border-white/5 pt-6 mx-auto max-w-7xl px-5 flex flex-wrap items-center justify-between gap-3 text-xs text-white/40">
-        <div>© {new Date().getFullYear()} {BRAND.fullName}. All rights reserved.</div>
+        <div>© {new Date().getFullYear()} {settings.gym_name}. All rights reserved.</div>
         <div className="flex gap-5">
           <a href="#" className="hover:text-primary">Privacy</a>
           <a href="#" className="hover:text-primary">Terms</a>
