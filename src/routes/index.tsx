@@ -34,6 +34,7 @@ import { Reveal } from "@/components/gym/Reveal";
 import { Counter } from "@/components/gym/Counter";
 import heroImg from "@/assets/hero-gym.jpg";
 import interiorImg from "@/assets/gym-interior.jpg";
+import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
