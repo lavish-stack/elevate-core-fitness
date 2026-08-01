@@ -71,9 +71,12 @@ function Dashboard() {
           </Link>
           <div className="flex items-center gap-3">
             {isAdmin && (
-              <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1.5 text-[10px] uppercase tracking-widest text-primary">
-                <ShieldCheck className="h-3.5 w-3.5" /> Admin
-              </span>
+              <Link
+                to="/admin"
+                className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1.5 text-[10px] uppercase tracking-widest text-primary transition-colors hover:bg-primary/25"
+              >
+                <ShieldCheck className="h-3.5 w-3.5" /> Admin Panel
+              </Link>
             )}
             <button onClick={signOut} className="btn-ghost !py-2 !px-4 text-sm">
               <LogOut className="h-4 w-4" /> Sign out
