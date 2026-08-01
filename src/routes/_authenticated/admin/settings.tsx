@@ -41,7 +41,10 @@ const schema = z.object({
   opening_hours: z.string().trim().max(300),
 });
 
-type FormState = z.input<typeof schema> & { hero_images: string[] };
+type FormState = Omit<z.input<typeof schema>, "trial_days"> & {
+  trial_days: string | number;
+  hero_images: string[];
+};
 
 const EMPTY: FormState = {
   gym_name: "",
