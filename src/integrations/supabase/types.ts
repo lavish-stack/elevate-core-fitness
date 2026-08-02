@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       contact_messages: {
         Row: {
+          admin_reply: string | null
           created_at: string
           email: string
           full_name: string
@@ -23,10 +24,13 @@ export type Database = {
           is_read: boolean
           message: string
           phone: string | null
+          replied_at: string | null
           subject: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
+          admin_reply?: string | null
           created_at?: string
           email: string
           full_name: string
@@ -34,10 +38,13 @@ export type Database = {
           is_read?: boolean
           message: string
           phone?: string | null
+          replied_at?: string | null
           subject?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
+          admin_reply?: string | null
           created_at?: string
           email?: string
           full_name?: string
@@ -45,8 +52,10 @@ export type Database = {
           is_read?: boolean
           message?: string
           phone?: string | null
+          replied_at?: string | null
           subject?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -155,6 +164,60 @@ export type Database = {
         }
         Relationships: []
       }
+      membership_requests: {
+        Row: {
+          admin_note: string | null
+          created_at: string
+          id: string
+          membership_id: string | null
+          note: string | null
+          plan_id: string | null
+          status: Database["public"]["Enums"]["request_status"]
+          type: Database["public"]["Enums"]["request_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_note?: string | null
+          created_at?: string
+          id?: string
+          membership_id?: string | null
+          note?: string | null
+          plan_id?: string | null
+          status?: Database["public"]["Enums"]["request_status"]
+          type?: Database["public"]["Enums"]["request_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_note?: string | null
+          created_at?: string
+          id?: string
+          membership_id?: string | null
+          note?: string | null
+          plan_id?: string | null
+          status?: Database["public"]["Enums"]["request_status"]
+          type?: Database["public"]["Enums"]["request_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "membership_requests_membership_id_fkey"
+            columns: ["membership_id"]
+            isOneToOne: false
+            referencedRelation: "memberships"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "membership_requests_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "membership_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       memberships: {
         Row: {
           amount_inr: number
@@ -204,6 +267,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          audience: string
+          body: string
+          created_at: string
+          dedupe_key: string | null
+          id: string
+          is_read: boolean
+          kind: string
+          link: string | null
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          audience?: string
+          body?: string
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          is_read?: boolean
+          kind?: string
+          link?: string | null
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          audience?: string
+          body?: string
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          is_read?: boolean
+          kind?: string
+          link?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       payments: {
         Row: {
@@ -430,8 +535,47 @@ export type Database = {
         }
         Relationships: []
       }
+      trainer_availability: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          time_slot: string
+          trainer_id: string
+          updated_at: string
+          weekday: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          time_slot: string
+          trainer_id: string
+          updated_at?: string
+          weekday: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          time_slot?: string
+          trainer_id?: string
+          updated_at?: string
+          weekday?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trainer_availability_trainer_id_fkey"
+            columns: ["trainer_id"]
+            isOneToOne: false
+            referencedRelation: "trainers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trainer_bookings: {
         Row: {
+          admin_note: string | null
           created_at: string
           id: string
           notes: string | null
@@ -443,6 +587,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          admin_note?: string | null
           created_at?: string
           id?: string
           notes?: string | null
@@ -454,6 +599,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          admin_note?: string | null
           created_at?: string
           id?: string
           notes?: string | null
@@ -584,12 +730,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_my_membership_expiry: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      push_notification: {
+        Args: {
+          _audience: string
+          _body: string
+          _dedupe?: string
+          _kind: string
+          _link?: string
+          _title: string
+          _user_id: string
+        }
+        Returns: undefined
       }
     }
     Enums: {
@@ -598,6 +757,8 @@ export type Database = {
       lead_status: "new" | "contacted" | "converted" | "closed"
       membership_status: "active" | "expired" | "pending" | "cancelled"
       payment_status: "created" | "paid" | "failed" | "refunded"
+      request_status: "pending" | "approved" | "rejected"
+      request_type: "renewal" | "cancellation" | "new"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -730,6 +891,8 @@ export const Constants = {
       lead_status: ["new", "contacted", "converted", "closed"],
       membership_status: ["active", "expired", "pending", "cancelled"],
       payment_status: ["created", "paid", "failed", "refunded"],
+      request_status: ["pending", "approved", "rejected"],
+      request_type: ["renewal", "cancellation", "new"],
     },
   },
 } as const

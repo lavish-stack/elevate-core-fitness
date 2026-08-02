@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Dumbbell, LayoutDashboard, Settings, Users, Images, CreditCard, Activity, Quote, HelpCircle, Mail, ClipboardList, LogOut, ExternalLink, Menu, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/lib/site-data";
 
@@ -9,6 +10,7 @@ const NAV = [
   { to: "/admin/settings", label: "Website Settings", icon: Settings },
   { to: "/admin/trainers", label: "Trainers", icon: Users },
   { to: "/admin/gallery", label: "Gallery", icon: Images },
+
   { to: "/admin/plans", label: "Membership Plans", icon: CreditCard },
   { to: "/admin/programs", label: "Programs", icon: Activity },
   { to: "/admin/testimonials", label: "Testimonials", icon: Quote },
@@ -16,6 +18,7 @@ const NAV = [
   { to: "/admin/messages", label: "Contact Messages", icon: Mail },
   { to: "/admin/trials", label: "Trial Registrations", icon: ClipboardList },
 ] as const;
+
 
 export function AdminShell({
   title,
@@ -82,8 +85,10 @@ export function AdminShell({
             </span>
           </div>
           <div className="flex items-center gap-2">
+            <NotificationBell scope="admin" />
             <a href="/" target="_blank" rel="noreferrer" className="btn-ghost !py-2 !px-4 text-sm">
               <ExternalLink className="h-4 w-4" /> <span className="hidden sm:inline">View site</span>
+
             </a>
             <button onClick={signOut} className="btn-ghost !py-2 !px-4 text-sm">
               <LogOut className="h-4 w-4" /> <span className="hidden sm:inline">Sign out</span>
