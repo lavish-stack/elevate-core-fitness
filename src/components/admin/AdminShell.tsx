@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Dumbbell, LayoutDashboard, Settings, Users, Images, CreditCard, Activity, Quote, HelpCircle, Mail, ClipboardList, LogOut, ExternalLink, Menu, X } from "lucide-react";
+import { Dumbbell, LayoutDashboard, Settings, Users, Images, CreditCard, Activity, Quote, HelpCircle, Mail, ClipboardList, LogOut, ExternalLink, Menu, X, CalendarCheck, Clock, Inbox } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/lib/site-data";
 
@@ -8,6 +9,9 @@ const NAV = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
   { to: "/admin/settings", label: "Website Settings", icon: Settings },
   { to: "/admin/trainers", label: "Trainers", icon: Users },
+  { to: "/admin/availability", label: "Trainer Availability", icon: Clock },
+  { to: "/admin/bookings", label: "Bookings", icon: CalendarCheck },
+  { to: "/admin/requests", label: "Membership Requests", icon: Inbox },
   { to: "/admin/gallery", label: "Gallery", icon: Images },
   { to: "/admin/plans", label: "Membership Plans", icon: CreditCard },
   { to: "/admin/programs", label: "Programs", icon: Activity },
@@ -16,6 +20,7 @@ const NAV = [
   { to: "/admin/messages", label: "Contact Messages", icon: Mail },
   { to: "/admin/trials", label: "Trial Registrations", icon: ClipboardList },
 ] as const;
+
 
 export function AdminShell({
   title,
