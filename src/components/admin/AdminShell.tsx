@@ -9,9 +9,8 @@ const NAV = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
   { to: "/admin/settings", label: "Website Settings", icon: Settings },
   { to: "/admin/trainers", label: "Trainers", icon: Users },
-  { to: "/admin/availability", label: "Trainer Availability", icon: Clock },
-  { to: "/admin/bookings", label: "Bookings", icon: CalendarCheck },
-  { to: "/admin/requests", label: "Membership Requests", icon: Inbox },
+  { to: "/admin/trainers", label: "Trainers", icon: Users },
+
   { to: "/admin/gallery", label: "Gallery", icon: Images },
   { to: "/admin/plans", label: "Membership Plans", icon: CreditCard },
   { to: "/admin/programs", label: "Programs", icon: Activity },
