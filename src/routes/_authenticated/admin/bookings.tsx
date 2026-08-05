@@ -41,6 +41,13 @@ type BookingRow = {
   created_at: string;
 };
 
+type BookingUpdate = {
+  status?: BookingStatus;
+  session_date?: string;
+  time_slot?: string;
+  admin_note?: string | null;
+};
+
 function BookingsAdmin() {
   const qc = useQueryClient();
   const [editing, setEditing] = useState<Row | null>(null);
@@ -87,7 +94,7 @@ function BookingsAdmin() {
   }, [qc]);
 
   const update = useMutation({
-    mutationFn: async ({ id, values }: { id: string; values: Record<string, unknown> }) => {
+    mutationFn: async ({ id, values }: { id: string; values: BookingUpdate }) => {
       const { error } = await supabase.from("trainer_bookings").update(values).eq("id", id);
       if (error) throw new Error(error.message);
     },
@@ -148,7 +155,7 @@ function BookingsAdmin() {
           { label: "Mark completed", values: { status: "completed" } },
         ]}
         onBulkUpdate={async (ids, values) => {
-          const { error } = await supabase.from("trainer_bookings").update(values).in("id", ids);
+          const { error } = await supabase.from("trainer_bookings").update(values as BookingUpdate).in("id", ids);
           if (error) {
             toast.error(error.message);
             return;
@@ -193,9 +200,9 @@ function BookingsAdmin() {
             render: (r) => (
               <div className="max-w-[16rem]">
                 <p className="text-white/70">{r.notes ? String(r.notes) : "—"}</p>
-                {r.admin_note && (
+                {r.admin_note ? (
                   <p className="mt-1 text-xs text-primary">Admin: {String(r.admin_note)}</p>
-                )}
+                ) : null}
               </div>
             ),
           },
@@ -207,7 +214,7 @@ function BookingsAdmin() {
                 value={String(r.status)}
                 aria-label="Booking status"
                 onChange={(e) =>
-                  update.mutate({ id: String(r.id), values: { status: e.target.value } })
+                  update.mutate({ id: String(r.id), values: { status: e.target.value as BookingStatus } })
                 }
                 className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs uppercase tracking-widest text-primary outline-none focus:border-primary/60"
               >
