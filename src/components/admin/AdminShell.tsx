@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Dumbbell, LayoutDashboard, Settings, Users, Images, CreditCard, Activity, Quote, HelpCircle, Mail, ClipboardList, LogOut, ExternalLink, Menu, X } from "lucide-react";
+import { Dumbbell, LayoutDashboard, Settings, Users, Images, CreditCard, Activity, Quote, HelpCircle, Mail, ClipboardList, LogOut, ExternalLink, Menu, X, CalendarCheck, FileCheck } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,8 +10,10 @@ const NAV = [
   { to: "/admin/settings", label: "Website Settings", icon: Settings },
   { to: "/admin/trainers", label: "Trainers", icon: Users },
   { to: "/admin/gallery", label: "Gallery", icon: Images },
-
+  { to: "/admin/bookings", label: "Trainer Bookings", icon: CalendarCheck },
+  { to: "/admin/requests", label: "Membership Requests", icon: FileCheck },
   { to: "/admin/plans", label: "Membership Plans", icon: CreditCard },
+
   { to: "/admin/programs", label: "Programs", icon: Activity },
   { to: "/admin/testimonials", label: "Testimonials", icon: Quote },
   { to: "/admin/faqs", label: "FAQs", icon: HelpCircle },
