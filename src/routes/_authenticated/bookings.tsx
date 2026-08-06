@@ -148,7 +148,17 @@ function BookingsPage() {
         .from("trainer_bookings")
         .update({ status: "cancelled" })
         .eq("id", id);
-      if (error) throw new Error(error.message);
+      if (error) {
+        // 42501 = insufficient_privilege, raised by the DB's cancel-only guard trigger.
+        // Surfaced only if a booking can no longer be cancelled (e.g. it changed state
+        // in the background) — give a clear, non-technical message instead of the raw
+        // Postgres error text.
+        throw new Error(
+          error.code === "42501"
+            ? "This booking can no longer be changed. Please refresh and try again."
+            : error.message,
+        );
+      }
     },
     onSuccess: () => {
       toast.success("Booking cancelled");

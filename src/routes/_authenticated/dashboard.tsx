@@ -42,14 +42,32 @@ function Dashboard() {
     queryKey: ["membership", user?.id],
     enabled: Boolean(user?.id),
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Prefer the member's active membership. Picking "furthest expires_at across any
+      // status" (the old behaviour) could surface a cancelled/pending row instead of the
+      // real active one whenever an older row happened to carry a later expiry date.
+      const { data: activeMembership, error: activeError } = await supabase
         .from("memberships")
         .select("*")
+        .eq("user_id", user!.id)
+        .eq("status", "active")
         .order("expires_at", { ascending: false })
         .limit(1)
         .maybeSingle();
-      if (error) throw error;
-      return data;
+      if (activeError) throw activeError;
+      if (activeMembership) return activeMembership;
+
+      // No active membership: fall back to the most recent membership of any status
+      // (e.g. expired or cancelled) so the dashboard still shows something meaningful
+      // instead of an empty state for members who have simply lapsed.
+      const { data: latestMembership, error: latestError } = await supabase
+        .from("memberships")
+        .select("*")
+        .eq("user_id", user!.id)
+        .order("expires_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (latestError) throw latestError;
+      return latestMembership;
     },
   });
 
