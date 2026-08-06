@@ -55,7 +55,6 @@ const addDays = (from: Date, days: number) => {
   return d;
 };
 const iso = (d: Date) => d.toISOString().slice(0, 10);
-const cardCode = () => `NFZ-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
 function RequestsAdmin() {
   const qc = useQueryClient();
@@ -174,6 +173,9 @@ function RequestsAdmin() {
             .eq("id", row.membership_id);
           if (error) throw new Error(error.message);
         } else {
+          // card_code is intentionally omitted: the memberships table applies a
+          // cryptographically strong default (gen_random_uuid()-derived) on insert.
+          // Never generate it client-side.
           const { error } = await supabase.from("memberships").insert({
             user_id: row.user_id,
             plan_id: plan.id,
@@ -182,7 +184,6 @@ function RequestsAdmin() {
             status: "active",
             starts_at: startsAt,
             expires_at: expiresAt,
-            card_code: cardCode(),
           });
           if (error) throw new Error(error.message);
         }
