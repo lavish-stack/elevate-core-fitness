@@ -116,7 +116,7 @@ function Checkout() {
 
         {planId && intent.isError && (
           <div className="mt-8">
-            <ErrorState message={intent.error instanceof Error ? intent.error.message : "Could not start checkout."} onRetry={() => intent.refetch()} />
+            <ErrorState description={intent.error instanceof Error ? intent.error.message : "Could not start checkout."} onRetry={() => void intent.refetch()} />
           </div>
         )}
 
