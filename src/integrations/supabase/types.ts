@@ -756,7 +756,7 @@ export type Database = {
       booking_status: "pending" | "confirmed" | "cancelled" | "completed"
       lead_status: "new" | "contacted" | "converted" | "closed"
       membership_status: "active" | "expired" | "pending" | "cancelled"
-      payment_status: "created" | "paid" | "failed" | "refunded"
+      payment_status: "created" | "paid" | "failed" | "refunded" | "cancelled"
       request_status: "pending" | "approved" | "rejected"
       request_type: "renewal" | "cancellation" | "new"
     }
@@ -890,7 +890,7 @@ export const Constants = {
       booking_status: ["pending", "confirmed", "cancelled", "completed"],
       lead_status: ["new", "contacted", "converted", "closed"],
       membership_status: ["active", "expired", "pending", "cancelled"],
-      payment_status: ["created", "paid", "failed", "refunded"],
+      payment_status: ["created", "paid", "failed", "refunded", "cancelled"],
       request_status: ["pending", "approved", "rejected"],
       request_type: ["renewal", "cancellation", "new"],
     },
