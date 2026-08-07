@@ -490,7 +490,7 @@ function Membership() {
                   ))}
                 </ul>
                 <a
-                  href="#contact"
+                  href={p.id.startsWith("static-") ? "#contact" : `/checkout?plan=${p.id}`}
                   className={`mt-7 text-center ${p.recommended ? "btn-primary" : "btn-ghost"}`}
                 >
                   Get Started
