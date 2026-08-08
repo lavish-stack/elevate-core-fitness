@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -7,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Modal } from "@/components/admin/CrudManager";
 import { DataTable, type Row } from "@/components/admin/DataTable";
+import { adminActivateMembership } from "@/lib/admin-membership.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/requests")({
   head: () => ({
@@ -58,6 +60,7 @@ const iso = (d: Date) => d.toISOString().slice(0, 10);
 
 function RequestsAdmin() {
   const qc = useQueryClient();
+  const activateMembership = useServerFn(adminActivateMembership);
   const [active, setActive] = useState<Row | null>(null);
   const [planId, setPlanId] = useState("");
   const [startsAt, setStartsAt] = useState(iso(new Date()));
@@ -159,34 +162,19 @@ function RequestsAdmin() {
         if (!startsAt || !expiresAt) throw new Error("Please set both start and expiry dates.");
         if (expiresAt <= startsAt) throw new Error("Expiry date must be after the start date.");
 
-        if (row.type === "renewal" && row.membership_id) {
-          const { error } = await supabase
-            .from("memberships")
-            .update({
-              plan_id: plan.id,
-              plan_name: plan.name,
-              amount_inr: plan.price_inr,
-              status: "active",
-              starts_at: startsAt,
-              expires_at: expiresAt,
-            })
-            .eq("id", row.membership_id);
-          if (error) throw new Error(error.message);
-        } else {
-          // card_code is intentionally omitted: the memberships table applies a
-          // cryptographically strong default (gen_random_uuid()-derived) on insert.
-          // Never generate it client-side.
-          const { error } = await supabase.from("memberships").insert({
-            user_id: row.user_id,
-            plan_id: plan.id,
-            plan_name: plan.name,
-            amount_inr: plan.price_inr,
-            status: "active",
-            starts_at: startsAt,
-            expires_at: expiresAt,
-          });
-          if (error) throw new Error(error.message);
-        }
+        // Delegates to the same shared activation function the verified
+        // Razorpay payment path uses (membership-activation.server.ts), so
+        // the "how does a membership get created/renewed" business rule is
+        // defined once, not duplicated between admin approval and payments.
+        await activateMembership({
+          data: {
+            userId: row.user_id,
+            planId: plan.id,
+            startsAt,
+            expiresAt,
+            existingMembershipId: row.type === "renewal" ? row.membership_id : null,
+          },
+        });
       }
 
       const { error } = await supabase

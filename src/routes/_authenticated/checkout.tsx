@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { AlertTriangle, ArrowLeft, CreditCard, Loader2, ShieldCheck, XCircle } from "lucide-react";
+import { AlertTriangle, ArrowLeft, CheckCircle2, CreditCard, Loader2, ShieldCheck, XCircle } from "lucide-react";
 import { z } from "zod";
 import { MemberHeader } from "@/components/member/MemberHeader";
 import { ErrorState, SkeletonBlock } from "@/components/gym/States";
@@ -13,7 +13,44 @@ import {
   closeCheckoutAttempt,
   createCheckoutIntent,
   createRazorpayOrder,
+  verifyRazorpayPayment,
 } from "@/lib/payments.functions";
+
+// Loaded on demand, only when a configured Razorpay order is actually ready
+// to open — keeps the script out of the bundle/page for members who never
+// reach a live checkout.
+function loadRazorpayCheckoutScript(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (document.getElementById("razorpay-checkout-js")) {
+      resolve();
+      return;
+    }
+    const script = document.createElement("script");
+    script.id = "razorpay-checkout-js";
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Could not load the payment gateway. Check your connection and try again."));
+    document.body.appendChild(script);
+  });
+}
+
+type RazorpaySuccessResponse = {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+};
+
+type RazorpayFailureResponse = {
+  error?: { description?: string; reason?: string };
+};
+
+type RazorpayInstance = { open: () => void; on: (event: string, cb: (resp: RazorpayFailureResponse) => void) => void };
+
+declare global {
+  interface Window {
+    Razorpay: new (options: Record<string, unknown>) => RazorpayInstance;
+  }
+}
 
 export const Route = createFileRoute("/_authenticated/checkout")({
   validateSearch: z.object({ plan: z.string().optional() }),
@@ -34,6 +71,8 @@ export const Route = createFileRoute("/_authenticated/checkout")({
 type UiState =
   | { kind: "idle" }
   | { kind: "processing" }
+  | { kind: "verifying" }
+  | { kind: "success" }
   | { kind: "unavailable"; message: string }
   | { kind: "failed"; message: string }
   | { kind: "cancelled" };
@@ -46,7 +85,13 @@ function Checkout() {
 
   const startCheckout = useServerFn(createCheckoutIntent);
   const startOrder = useServerFn(createRazorpayOrder);
+  const verifyPayment = useServerFn(verifyRazorpayPayment);
   const closeAttempt = useServerFn(closeCheckoutAttempt);
+  // Guards against the rare case where Razorpay's handler fires more than
+  // once for the same checkout session (their SDK generally doesn't, but
+  // this makes the browser side idempotent too, on top of the server-side
+  // idempotency in finalizeSuccessfulPayment).
+  const verifiedOnceRef = useRef(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -69,20 +114,95 @@ function Checkout() {
     queryFn: () => startCheckout({ data: { planId: planId! } }),
   });
 
-  const pay = useMutation({
-    mutationFn: async (paymentId: string) => startOrder({ data: { paymentId } }),
-    onMutate: () => setState({ kind: "processing" }),
+  const verify = useMutation({
+    mutationFn: async (input: { paymentId: string; response: RazorpaySuccessResponse }) =>
+      verifyPayment({
+        data: {
+          paymentId: input.paymentId,
+          razorpayOrderId: input.response.razorpay_order_id,
+          razorpayPaymentId: input.response.razorpay_payment_id,
+          razorpaySignature: input.response.razorpay_signature,
+        },
+      }),
+    onMutate: () => setState({ kind: "verifying" }),
     onSuccess: (result) => {
+      if (!result.verified) {
+        setState({ kind: "failed", message: result.reason });
+        return;
+      }
+      setState({ kind: "success" });
+    },
+    onError: (error) =>
+      setState({
+        kind: "failed",
+        message: error instanceof Error ? error.message : "Could not verify payment. Contact us with your payment ID.",
+      }),
+  });
+
+  const pay = useMutation({
+    mutationFn: async (paymentId: string) => {
+      const result = await startOrder({ data: { paymentId } });
+      return { paymentId, result };
+    },
+    onMutate: () => setState({ kind: "processing" }),
+    onSuccess: async ({ paymentId, result }) => {
       if (!result.configured) {
         setState({ kind: "unavailable", message: result.message });
         return;
       }
-      // Razorpay Checkout hand-off lands here once credentials are configured.
-      // Membership activation happens only after server-side webhook verification.
-      setState({
-        kind: "unavailable",
-        message: "Payment gateway session created. Completing payments will be enabled with the next release.",
+
+      try {
+        await loadRazorpayCheckoutScript();
+      } catch (e) {
+        setState({ kind: "failed", message: e instanceof Error ? e.message : "Could not load payment gateway." });
+        return;
+      }
+
+      verifiedOnceRef.current = false;
+
+      const rzp = new window.Razorpay({
+        key: result.keyId,
+        amount: result.amountPaise,
+        currency: result.currency,
+        order_id: result.orderId,
+        name: "New Fitness Zone",
+        description: intent.data?.planName,
+        prefill: {
+          name: profile?.full_name || undefined,
+          email: user?.email || undefined,
+          contact: profile?.phone || undefined,
+        },
+        // Approximates this app's --primary token (oklch(0.62 0.24 25)) —
+        // Razorpay's widget only accepts a literal hex color.
+        theme: { color: "#e5342e" },
+        // Membership activation NEVER happens here in the handler — this
+        // callback only forwards the signed response to the server, which
+        // re-verifies the HMAC signature before doing anything.
+        handler: (response: RazorpaySuccessResponse) => {
+          if (verifiedOnceRef.current) return;
+          verifiedOnceRef.current = true;
+          verify.mutate({ paymentId, response });
+        },
+        modal: {
+          ondismiss: () => {
+            // Guard against a stale-closure race: if `handler` already fired
+            // (verifiedOnceRef.current === true), Razorpay is just closing
+            // its own modal after a successful charge — do not overwrite
+            // the in-flight/succeeded verification with "cancelled".
+            if (verifiedOnceRef.current) return;
+            void closeAttempt({ data: { paymentId, status: "cancelled" } });
+            setState({ kind: "cancelled" });
+          },
+        },
       });
+
+      rzp.on("payment.failed", (resp: RazorpayFailureResponse) => {
+        const reason = resp.error?.description || resp.error?.reason || "Payment failed at the gateway.";
+        void closeAttempt({ data: { paymentId, status: "failed", reason } });
+        setState({ kind: "failed", message: reason });
+      });
+
+      rzp.open();
     },
     onError: (error) =>
       setState({ kind: "failed", message: error instanceof Error ? error.message : "Payment could not be started." }),
@@ -145,35 +265,53 @@ function Checkout() {
                 Checkout cancelled. Nothing was charged.
               </Banner>
             )}
+            {state.kind === "verifying" && (
+              <Banner tone="warn" icon={<Loader2 className="h-4 w-4 animate-spin" />}>
+                Payment received — verifying and activating your membership…
+              </Banner>
+            )}
+            {state.kind === "success" && (
+              <Banner tone="success" icon={<CheckCircle2 className="h-4 w-4" />}>
+                Payment verified. Your membership is now active.
+              </Banner>
+            )}
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <button
-                type="button"
-                disabled={state.kind === "processing" || state.kind === "cancelled"}
-                onClick={() => pay.mutate(intent.data.paymentId)}
-                className="btn-primary inline-flex items-center gap-2 disabled:opacity-50"
-              >
-                {state.kind === "processing" ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Starting payment…
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="h-4 w-4" /> Continue to Payment
-                  </>
-                )}
-              </button>
-              <button
-                type="button"
-                disabled={cancel.isPending || state.kind === "cancelled"}
-                onClick={() => cancel.mutate(intent.data.paymentId)}
-                className="btn-ghost disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              {state.kind === "cancelled" && (
+              {state.kind !== "success" && (
+                <button
+                  type="button"
+                  disabled={state.kind === "processing" || state.kind === "verifying" || state.kind === "cancelled"}
+                  onClick={() => pay.mutate(intent.data.paymentId)}
+                  className="btn-primary inline-flex items-center gap-2 disabled:opacity-50"
+                >
+                  {state.kind === "processing" ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Starting payment…
+                    </>
+                  ) : state.kind === "verifying" ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Verifying…
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="h-4 w-4" /> Continue to Payment
+                    </>
+                  )}
+                </button>
+              )}
+              {state.kind !== "success" && (
+                <button
+                  type="button"
+                  disabled={cancel.isPending || state.kind === "cancelled" || state.kind === "verifying"}
+                  onClick={() => cancel.mutate(intent.data.paymentId)}
+                  className="btn-ghost disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              )}
+              {(state.kind === "cancelled" || state.kind === "success") && (
                 <button type="button" onClick={() => navigate({ to: "/dashboard" })} className="btn-ghost">
-                  Return to dashboard
+                  {state.kind === "success" ? "Go to dashboard" : "Return to dashboard"}
                 </button>
               )}
             </div>
@@ -204,7 +342,7 @@ function Banner({
   icon,
   children,
 }: {
-  tone: "warn" | "error";
+  tone: "warn" | "error" | "success";
   icon: React.ReactNode;
   children: React.ReactNode;
 }) {
@@ -213,10 +351,12 @@ function Banner({
       className={`mt-6 flex items-start gap-2 rounded-xl border px-4 py-3 text-sm ${
         tone === "error"
           ? "border-primary/40 bg-primary/10 text-white/85"
-          : "border-white/15 bg-white/5 text-white/75"
+          : tone === "success"
+            ? "border-emerald-500/40 bg-emerald-500/10 text-white/85"
+            : "border-white/15 bg-white/5 text-white/75"
       }`}
     >
-      <span className="mt-0.5 text-primary">{icon}</span>
+      <span className={`mt-0.5 ${tone === "success" ? "text-emerald-400" : "text-primary"}`}>{icon}</span>
       <span>{children}</span>
     </div>
   );
