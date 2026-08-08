@@ -139,6 +139,79 @@ export const createRazorpayOrder = createServerFn({ method: "POST" })
     return { configured: true, keyId, orderId: order.id, amountPaise, currency: "INR" };
   });
 
+export type VerifyPaymentResult =
+  | { verified: true; membershipId: string | null; outcome: "activated" | "already_processed" }
+  | { verified: false; reason: string };
+
+/**
+ * Called by the browser immediately after Razorpay's Checkout.js `handler`
+ * callback fires with a signed success response. This is NOT itself the
+ * activation trigger — it verifies the HMAC signature Razorpay returned
+ * (proving the payment_id genuinely belongs to the order WE created for
+ * THIS user) and only then calls the same idempotent finalize path the
+ * webhook uses. If this call never happens (tab closed, network drop), the
+ * webhook still activates the membership independently and asynchronously —
+ * this function exists purely to give the member instant feedback.
+ */
+export const verifyRazorpayPayment = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        paymentId: z.string().uuid(),
+        razorpayOrderId: z.string().min(1),
+        razorpayPaymentId: z.string().min(1),
+        razorpaySignature: z.string().min(1),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }): Promise<VerifyPaymentResult> => {
+    const keySecret = process.env["RAZORPAY_KEY_SECRET"];
+    if (!keySecret) {
+      return { verified: false, reason: "Payment verification is not configured." };
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: payment, error } = await supabaseAdmin
+      .from("payments")
+      .select("id,user_id,provider_order_id,status")
+      .eq("id", data.paymentId)
+      .maybeSingle();
+
+    if (error || !payment) return { verified: false, reason: "Payment attempt not found." };
+    // Ownership check: a member can only verify/finalize their own payment.
+    if (payment.user_id !== context.userId) return { verified: false, reason: "Forbidden." };
+    if (payment.provider_order_id !== data.razorpayOrderId) {
+      return { verified: false, reason: "Order mismatch." };
+    }
+
+    const { verifyCheckoutSignature } = await import("@/lib/razorpay-verify.server");
+    const signatureOk = await verifyCheckoutSignature({
+      orderId: data.razorpayOrderId,
+      paymentId: data.razorpayPaymentId,
+      signature: data.razorpaySignature,
+      keySecret,
+    });
+
+    if (!signatureOk) {
+      const { markPaymentFailed } = await import("@/lib/payment-finalization.server");
+      await markPaymentFailed(supabaseAdmin, { paymentId: payment.id, reason: "Signature verification failed." });
+      return { verified: false, reason: "Payment could not be verified." };
+    }
+
+    const { finalizeSuccessfulPayment } = await import("@/lib/payment-finalization.server");
+    const result = await finalizeSuccessfulPayment(supabaseAdmin, {
+      paymentId: payment.id,
+      providerPaymentId: data.razorpayPaymentId,
+    });
+
+    if (result.outcome === "payment_not_found") {
+      return { verified: false, reason: "Payment attempt not found." };
+    }
+    return { verified: true, membershipId: result.membershipId, outcome: result.outcome };
+  });
+
 /** Marks an open attempt as cancelled or failed. Never marks anything as paid. */
 export const closeCheckoutAttempt = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
