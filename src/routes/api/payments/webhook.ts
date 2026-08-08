@@ -11,15 +11,8 @@ export const Route = createFileRoute("/api/payments/webhook")({
   server: {
     handlers: {
       POST: async ({ request }: { request: Request }) => {
-        const webhookSecret = process.env["RAZORPAY_WEBHOOK_SECRET"];
-        if (!webhookSecret) {
-          console.error("[razorpay-webhook] RAZORPAY_WEBHOOK_SECRET is not configured");
-          return new Response(JSON.stringify({ error: "Webhook not configured" }), {
-            status: 500,
-            headers: { "content-type": "application/json" },
-          });
-        }
-
+        // Reject unsigned requests (probes, browsers, misconfigured callers)
+        // before anything else, so they never surface as server errors.
         const signatureHeader = request.headers.get("x-razorpay-signature");
         if (!signatureHeader) {
           return new Response(JSON.stringify({ error: "Missing signature" }), {
@@ -27,6 +20,18 @@ export const Route = createFileRoute("/api/payments/webhook")({
             headers: { "content-type": "application/json" },
           });
         }
+
+        const webhookSecret = process.env["RAZORPAY_WEBHOOK_SECRET"];
+        if (!webhookSecret) {
+          // Not an app crash — Razorpay is simply not configured yet.
+          // 503 tells Razorpay to retry once credentials exist.
+          console.warn("[razorpay-webhook] RAZORPAY_WEBHOOK_SECRET is not configured");
+          return new Response(JSON.stringify({ error: "Webhook not configured" }), {
+            status: 503,
+            headers: { "content-type": "application/json" },
+          });
+        }
+
 
         // Signature is computed over the RAW body text — must read as text
         // before any JSON.parse, and must not re-serialize it afterwards.
