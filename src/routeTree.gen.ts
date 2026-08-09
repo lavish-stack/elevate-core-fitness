@@ -31,6 +31,7 @@ import { Route as AuthenticatedAdminMembersRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminGalleryRouteImport } from './routes/_authenticated/admin/gallery'
 import { Route as AuthenticatedAdminFaqsRouteImport } from './routes/_authenticated/admin/faqs'
 import { Route as AuthenticatedAdminBookingsRouteImport } from './routes/_authenticated/admin/bookings'
+import { Route as AuthenticatedAdminMembersMemberIdRouteImport } from './routes/_authenticated/admin/members.$memberId'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -151,6 +152,12 @@ const AuthenticatedAdminBookingsRoute =
     path: '/bookings',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminMembersMemberIdRoute =
+  AuthenticatedAdminMembersMemberIdRouteImport.update({
+    id: '/$memberId',
+    path: '/$memberId',
+    getParentRoute: () => AuthenticatedAdminMembersRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -163,7 +170,7 @@ export interface FileRoutesByFullPath {
   '/admin/bookings': typeof AuthenticatedAdminBookingsRoute
   '/admin/faqs': typeof AuthenticatedAdminFaqsRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
-  '/admin/members': typeof AuthenticatedAdminMembersRoute
+  '/admin/members': typeof AuthenticatedAdminMembersRouteWithChildren
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/plans': typeof AuthenticatedAdminPlansRoute
   '/admin/programs': typeof AuthenticatedAdminProgramsRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/admin/trials': typeof AuthenticatedAdminTrialsRoute
   '/api/payments/webhook': typeof ApiPaymentsWebhookRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -185,7 +193,7 @@ export interface FileRoutesByTo {
   '/admin/bookings': typeof AuthenticatedAdminBookingsRoute
   '/admin/faqs': typeof AuthenticatedAdminFaqsRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
-  '/admin/members': typeof AuthenticatedAdminMembersRoute
+  '/admin/members': typeof AuthenticatedAdminMembersRouteWithChildren
   '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/plans': typeof AuthenticatedAdminPlansRoute
   '/admin/programs': typeof AuthenticatedAdminProgramsRoute
@@ -196,6 +204,7 @@ export interface FileRoutesByTo {
   '/admin/trials': typeof AuthenticatedAdminTrialsRoute
   '/api/payments/webhook': typeof ApiPaymentsWebhookRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -210,7 +219,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/bookings': typeof AuthenticatedAdminBookingsRoute
   '/_authenticated/admin/faqs': typeof AuthenticatedAdminFaqsRoute
   '/_authenticated/admin/gallery': typeof AuthenticatedAdminGalleryRoute
-  '/_authenticated/admin/members': typeof AuthenticatedAdminMembersRoute
+  '/_authenticated/admin/members': typeof AuthenticatedAdminMembersRouteWithChildren
   '/_authenticated/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/_authenticated/admin/plans': typeof AuthenticatedAdminPlansRoute
   '/_authenticated/admin/programs': typeof AuthenticatedAdminProgramsRoute
@@ -221,6 +230,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/trials': typeof AuthenticatedAdminTrialsRoute
   '/api/payments/webhook': typeof ApiPaymentsWebhookRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -246,6 +256,7 @@ export interface FileRouteTypes {
     | '/admin/trials'
     | '/api/payments/webhook'
     | '/admin/'
+    | '/admin/members/$memberId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -268,6 +279,7 @@ export interface FileRouteTypes {
     | '/admin/trials'
     | '/api/payments/webhook'
     | '/admin'
+    | '/admin/members/$memberId'
   id:
     | '__root__'
     | '/'
@@ -292,6 +304,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/trials'
     | '/api/payments/webhook'
     | '/_authenticated/admin/'
+    | '/_authenticated/admin/members/$memberId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -457,14 +470,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminBookingsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/members/$memberId': {
+      id: '/_authenticated/admin/members/$memberId'
+      path: '/$memberId'
+      fullPath: '/admin/members/$memberId'
+      preLoaderRoute: typeof AuthenticatedAdminMembersMemberIdRouteImport
+      parentRoute: typeof AuthenticatedAdminMembersRoute
+    }
   }
 }
+
+interface AuthenticatedAdminMembersRouteChildren {
+  AuthenticatedAdminMembersMemberIdRoute: typeof AuthenticatedAdminMembersMemberIdRoute
+}
+
+const AuthenticatedAdminMembersRouteChildren: AuthenticatedAdminMembersRouteChildren =
+  {
+    AuthenticatedAdminMembersMemberIdRoute:
+      AuthenticatedAdminMembersMemberIdRoute,
+  }
+
+const AuthenticatedAdminMembersRouteWithChildren =
+  AuthenticatedAdminMembersRoute._addFileChildren(
+    AuthenticatedAdminMembersRouteChildren,
+  )
 
 interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminBookingsRoute: typeof AuthenticatedAdminBookingsRoute
   AuthenticatedAdminFaqsRoute: typeof AuthenticatedAdminFaqsRoute
   AuthenticatedAdminGalleryRoute: typeof AuthenticatedAdminGalleryRoute
-  AuthenticatedAdminMembersRoute: typeof AuthenticatedAdminMembersRoute
+  AuthenticatedAdminMembersRoute: typeof AuthenticatedAdminMembersRouteWithChildren
   AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
   AuthenticatedAdminPlansRoute: typeof AuthenticatedAdminPlansRoute
   AuthenticatedAdminProgramsRoute: typeof AuthenticatedAdminProgramsRoute
@@ -481,7 +516,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminBookingsRoute: AuthenticatedAdminBookingsRoute,
     AuthenticatedAdminFaqsRoute: AuthenticatedAdminFaqsRoute,
     AuthenticatedAdminGalleryRoute: AuthenticatedAdminGalleryRoute,
-    AuthenticatedAdminMembersRoute: AuthenticatedAdminMembersRoute,
+    AuthenticatedAdminMembersRoute: AuthenticatedAdminMembersRouteWithChildren,
     AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
     AuthenticatedAdminPlansRoute: AuthenticatedAdminPlansRoute,
     AuthenticatedAdminProgramsRoute: AuthenticatedAdminProgramsRoute,

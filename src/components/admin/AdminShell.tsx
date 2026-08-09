@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Dumbbell, LayoutDashboard, Settings, Users, Images, CreditCard, Activity, Quote, HelpCircle, Mail, ClipboardList, LogOut, ExternalLink, Menu, X, CalendarCheck, FileCheck } from "lucide-react";
+import { Dumbbell, LayoutDashboard, Settings, Users, IdCard, Images, CreditCard, Activity, Quote, HelpCircle, Mail, ClipboardList, LogOut, ExternalLink, Menu, X, CalendarCheck, FileCheck } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,6 +8,7 @@ import { useSiteSettings } from "@/lib/site-data";
 const NAV = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
   { to: "/admin/settings", label: "Website Settings", icon: Settings },
+  { to: "/admin/members", label: "Members", icon: IdCard },
   { to: "/admin/trainers", label: "Trainers", icon: Users },
   { to: "/admin/gallery", label: "Gallery", icon: Images },
   { to: "/admin/bookings", label: "Trainer Bookings", icon: CalendarCheck },
