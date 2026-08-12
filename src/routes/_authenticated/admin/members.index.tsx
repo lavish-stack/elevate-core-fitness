@@ -32,7 +32,7 @@ import { formatINR } from "@/lib/site-data";
 import { exportMembers, listMembers } from "@/lib/members-admin.functions";
 import type { MemberSort, MemberStatus } from "@/lib/members-admin.types";
 
-export const Route = createFileRoute("/_authenticated/admin/members")({
+export const Route = createFileRoute("/_authenticated/admin/members/")({
   head: () => ({
     meta: [
       { title: "Members — New Fitness Zone Admin" },
