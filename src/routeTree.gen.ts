@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedMembershipCardRouteImport } from './routes/_authenticated/membership-card'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
 import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
@@ -52,6 +53,12 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMembershipCardRoute =
+  AuthenticatedMembershipCardRouteImport.update({
+    id: '/membership-card',
+    path: '/membership-card',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -166,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/bookings': typeof AuthenticatedBookingsRoute
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/membership-card': typeof AuthenticatedMembershipCardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/admin/bookings': typeof AuthenticatedAdminBookingsRoute
   '/admin/faqs': typeof AuthenticatedAdminFaqsRoute
@@ -189,6 +197,7 @@ export interface FileRoutesByTo {
   '/bookings': typeof AuthenticatedBookingsRoute
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/membership-card': typeof AuthenticatedMembershipCardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/admin/bookings': typeof AuthenticatedAdminBookingsRoute
   '/admin/faqs': typeof AuthenticatedAdminFaqsRoute
@@ -215,6 +224,7 @@ export interface FileRoutesById {
   '/_authenticated/bookings': typeof AuthenticatedBookingsRoute
   '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/membership-card': typeof AuthenticatedMembershipCardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/admin/bookings': typeof AuthenticatedAdminBookingsRoute
   '/_authenticated/admin/faqs': typeof AuthenticatedAdminFaqsRoute
@@ -241,6 +251,7 @@ export interface FileRouteTypes {
     | '/bookings'
     | '/checkout'
     | '/dashboard'
+    | '/membership-card'
     | '/profile'
     | '/admin/bookings'
     | '/admin/faqs'
@@ -264,6 +275,7 @@ export interface FileRouteTypes {
     | '/bookings'
     | '/checkout'
     | '/dashboard'
+    | '/membership-card'
     | '/profile'
     | '/admin/bookings'
     | '/admin/faqs'
@@ -289,6 +301,7 @@ export interface FileRouteTypes {
     | '/_authenticated/bookings'
     | '/_authenticated/checkout'
     | '/_authenticated/dashboard'
+    | '/_authenticated/membership-card'
     | '/_authenticated/profile'
     | '/_authenticated/admin/bookings'
     | '/_authenticated/admin/faqs'
@@ -342,6 +355,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/membership-card': {
+      id: '/_authenticated/membership-card'
+      path: '/membership-card'
+      fullPath: '/membership-card'
+      preLoaderRoute: typeof AuthenticatedMembershipCardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -538,6 +558,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBookingsRoute: typeof AuthenticatedBookingsRoute
   AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedMembershipCardRoute: typeof AuthenticatedMembershipCardRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
 }
 
@@ -546,6 +567,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBookingsRoute: AuthenticatedBookingsRoute,
   AuthenticatedCheckoutRoute: AuthenticatedCheckoutRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedMembershipCardRoute: AuthenticatedMembershipCardRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
 }
 
