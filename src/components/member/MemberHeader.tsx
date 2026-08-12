@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { CalendarCheck, Dumbbell, LogOut, ShieldCheck, User } from "lucide-react";
+import { CalendarCheck, Dumbbell, IdCard, LogOut, ShieldCheck, User } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/lib/site-data";

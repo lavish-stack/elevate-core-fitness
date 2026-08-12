@@ -19,6 +19,7 @@ import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as VerifyMembershipCardCodeRouteImport } from './routes/verify.membership.$cardCode'
 import { Route as ApiPaymentsWebhookRouteImport } from './routes/api/payments/webhook'
 import { Route as AuthenticatedAdminTrialsRouteImport } from './routes/_authenticated/admin/trials'
 import { Route as AuthenticatedAdminTrainersRouteImport } from './routes/_authenticated/admin/trainers'
@@ -84,6 +85,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const VerifyMembershipCardCodeRoute =
+  VerifyMembershipCardCodeRouteImport.update({
+    id: '/verify/membership/$cardCode',
+    path: '/verify/membership/$cardCode',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPaymentsWebhookRoute = ApiPaymentsWebhookRouteImport.update({
   id: '/api/payments/webhook',
   path: '/api/payments/webhook',
@@ -188,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/admin/trainers': typeof AuthenticatedAdminTrainersRoute
   '/admin/trials': typeof AuthenticatedAdminTrialsRoute
   '/api/payments/webhook': typeof ApiPaymentsWebhookRoute
+  '/verify/membership/$cardCode': typeof VerifyMembershipCardCodeRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
 }
@@ -212,6 +220,7 @@ export interface FileRoutesByTo {
   '/admin/trainers': typeof AuthenticatedAdminTrainersRoute
   '/admin/trials': typeof AuthenticatedAdminTrialsRoute
   '/api/payments/webhook': typeof ApiPaymentsWebhookRoute
+  '/verify/membership/$cardCode': typeof VerifyMembershipCardCodeRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
 }
@@ -239,6 +248,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/trainers': typeof AuthenticatedAdminTrainersRoute
   '/_authenticated/admin/trials': typeof AuthenticatedAdminTrialsRoute
   '/api/payments/webhook': typeof ApiPaymentsWebhookRoute
+  '/verify/membership/$cardCode': typeof VerifyMembershipCardCodeRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
 }
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/admin/trainers'
     | '/admin/trials'
     | '/api/payments/webhook'
+    | '/verify/membership/$cardCode'
     | '/admin/'
     | '/admin/members/$memberId'
   fileRoutesByTo: FileRoutesByTo
@@ -290,6 +301,7 @@ export interface FileRouteTypes {
     | '/admin/trainers'
     | '/admin/trials'
     | '/api/payments/webhook'
+    | '/verify/membership/$cardCode'
     | '/admin'
     | '/admin/members/$memberId'
   id:
@@ -316,6 +328,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/trainers'
     | '/_authenticated/admin/trials'
     | '/api/payments/webhook'
+    | '/verify/membership/$cardCode'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/members/$memberId'
   fileRoutesById: FileRoutesById
@@ -325,6 +338,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ApiPaymentsWebhookRoute: typeof ApiPaymentsWebhookRoute
+  VerifyMembershipCardCodeRoute: typeof VerifyMembershipCardCodeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -398,6 +412,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/verify/membership/$cardCode': {
+      id: '/verify/membership/$cardCode'
+      path: '/verify/membership/$cardCode'
+      fullPath: '/verify/membership/$cardCode'
+      preLoaderRoute: typeof VerifyMembershipCardCodeRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/payments/webhook': {
       id: '/api/payments/webhook'
@@ -579,6 +600,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ApiPaymentsWebhookRoute: ApiPaymentsWebhookRoute,
+  VerifyMembershipCardCodeRoute: VerifyMembershipCardCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
