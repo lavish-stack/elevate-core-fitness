@@ -69,7 +69,7 @@ function ProfilePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("memberships")
-        .select("id,plan_name,amount_inr,status,starts_at,expires_at,created_at")
+        .select("id,plan_name,amount_inr,status,starts_at,expires_at,card_code,created_at")
         .order("starts_at", { ascending: false });
       if (error) throw new Error(error.message);
       return data;

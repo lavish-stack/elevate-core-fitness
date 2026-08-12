@@ -13,11 +13,13 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedMembershipCardRouteImport } from './routes/_authenticated/membership-card'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
 import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as VerifyMembershipCardCodeRouteImport } from './routes/verify.membership.$cardCode'
 import { Route as ApiPaymentsWebhookRouteImport } from './routes/api/payments/webhook'
 import { Route as AuthenticatedAdminTrialsRouteImport } from './routes/_authenticated/admin/trials'
 import { Route as AuthenticatedAdminTrainersRouteImport } from './routes/_authenticated/admin/trainers'
@@ -52,6 +54,12 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMembershipCardRoute =
+  AuthenticatedMembershipCardRouteImport.update({
+    id: '/membership-card',
+    path: '/membership-card',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -77,6 +85,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const VerifyMembershipCardCodeRoute =
+  VerifyMembershipCardCodeRouteImport.update({
+    id: '/verify/membership/$cardCode',
+    path: '/verify/membership/$cardCode',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPaymentsWebhookRoute = ApiPaymentsWebhookRouteImport.update({
   id: '/api/payments/webhook',
   path: '/api/payments/webhook',
@@ -166,6 +180,7 @@ export interface FileRoutesByFullPath {
   '/bookings': typeof AuthenticatedBookingsRoute
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/membership-card': typeof AuthenticatedMembershipCardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/admin/bookings': typeof AuthenticatedAdminBookingsRoute
   '/admin/faqs': typeof AuthenticatedAdminFaqsRoute
@@ -180,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/admin/trainers': typeof AuthenticatedAdminTrainersRoute
   '/admin/trials': typeof AuthenticatedAdminTrialsRoute
   '/api/payments/webhook': typeof ApiPaymentsWebhookRoute
+  '/verify/membership/$cardCode': typeof VerifyMembershipCardCodeRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
 }
@@ -189,6 +205,7 @@ export interface FileRoutesByTo {
   '/bookings': typeof AuthenticatedBookingsRoute
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/membership-card': typeof AuthenticatedMembershipCardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/admin/bookings': typeof AuthenticatedAdminBookingsRoute
   '/admin/faqs': typeof AuthenticatedAdminFaqsRoute
@@ -203,6 +220,7 @@ export interface FileRoutesByTo {
   '/admin/trainers': typeof AuthenticatedAdminTrainersRoute
   '/admin/trials': typeof AuthenticatedAdminTrialsRoute
   '/api/payments/webhook': typeof ApiPaymentsWebhookRoute
+  '/verify/membership/$cardCode': typeof VerifyMembershipCardCodeRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
 }
@@ -215,6 +233,7 @@ export interface FileRoutesById {
   '/_authenticated/bookings': typeof AuthenticatedBookingsRoute
   '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/membership-card': typeof AuthenticatedMembershipCardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/admin/bookings': typeof AuthenticatedAdminBookingsRoute
   '/_authenticated/admin/faqs': typeof AuthenticatedAdminFaqsRoute
@@ -229,6 +248,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/trainers': typeof AuthenticatedAdminTrainersRoute
   '/_authenticated/admin/trials': typeof AuthenticatedAdminTrialsRoute
   '/api/payments/webhook': typeof ApiPaymentsWebhookRoute
+  '/verify/membership/$cardCode': typeof VerifyMembershipCardCodeRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/members/$memberId': typeof AuthenticatedAdminMembersMemberIdRoute
 }
@@ -241,6 +261,7 @@ export interface FileRouteTypes {
     | '/bookings'
     | '/checkout'
     | '/dashboard'
+    | '/membership-card'
     | '/profile'
     | '/admin/bookings'
     | '/admin/faqs'
@@ -255,6 +276,7 @@ export interface FileRouteTypes {
     | '/admin/trainers'
     | '/admin/trials'
     | '/api/payments/webhook'
+    | '/verify/membership/$cardCode'
     | '/admin/'
     | '/admin/members/$memberId'
   fileRoutesByTo: FileRoutesByTo
@@ -264,6 +286,7 @@ export interface FileRouteTypes {
     | '/bookings'
     | '/checkout'
     | '/dashboard'
+    | '/membership-card'
     | '/profile'
     | '/admin/bookings'
     | '/admin/faqs'
@@ -278,6 +301,7 @@ export interface FileRouteTypes {
     | '/admin/trainers'
     | '/admin/trials'
     | '/api/payments/webhook'
+    | '/verify/membership/$cardCode'
     | '/admin'
     | '/admin/members/$memberId'
   id:
@@ -289,6 +313,7 @@ export interface FileRouteTypes {
     | '/_authenticated/bookings'
     | '/_authenticated/checkout'
     | '/_authenticated/dashboard'
+    | '/_authenticated/membership-card'
     | '/_authenticated/profile'
     | '/_authenticated/admin/bookings'
     | '/_authenticated/admin/faqs'
@@ -303,6 +328,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/trainers'
     | '/_authenticated/admin/trials'
     | '/api/payments/webhook'
+    | '/verify/membership/$cardCode'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/members/$memberId'
   fileRoutesById: FileRoutesById
@@ -312,6 +338,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ApiPaymentsWebhookRoute: typeof ApiPaymentsWebhookRoute
+  VerifyMembershipCardCodeRoute: typeof VerifyMembershipCardCodeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -342,6 +369,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/membership-card': {
+      id: '/_authenticated/membership-card'
+      path: '/membership-card'
+      fullPath: '/membership-card'
+      preLoaderRoute: typeof AuthenticatedMembershipCardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -378,6 +412,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/verify/membership/$cardCode': {
+      id: '/verify/membership/$cardCode'
+      path: '/verify/membership/$cardCode'
+      fullPath: '/verify/membership/$cardCode'
+      preLoaderRoute: typeof VerifyMembershipCardCodeRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/payments/webhook': {
       id: '/api/payments/webhook'
@@ -538,6 +579,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBookingsRoute: typeof AuthenticatedBookingsRoute
   AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedMembershipCardRoute: typeof AuthenticatedMembershipCardRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
 }
 
@@ -546,6 +588,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBookingsRoute: AuthenticatedBookingsRoute,
   AuthenticatedCheckoutRoute: AuthenticatedCheckoutRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedMembershipCardRoute: AuthenticatedMembershipCardRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
 }
 
@@ -557,7 +600,18 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ApiPaymentsWebhookRoute: ApiPaymentsWebhookRoute,
+  VerifyMembershipCardCodeRoute: VerifyMembershipCardCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

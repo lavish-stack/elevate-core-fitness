@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { CalendarCheck, Dumbbell, LogOut, ShieldCheck, User } from "lucide-react";
+import { CalendarCheck, Dumbbell, IdCard, LogOut, ShieldCheck, User } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/lib/site-data";
@@ -26,6 +26,12 @@ export function MemberHeader() {
             className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-[10px] uppercase tracking-widest text-white/70 transition-colors hover:text-primary"
           >
             <CalendarCheck className="h-3.5 w-3.5" /> Bookings
+          </Link>
+          <Link
+            to="/membership-card"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-[10px] uppercase tracking-widest text-white/70 transition-colors hover:text-primary"
+          >
+            <IdCard className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Membership Card</span>
           </Link>
           <Link
             to="/profile"
